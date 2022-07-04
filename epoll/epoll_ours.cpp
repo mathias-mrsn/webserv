@@ -9,60 +9,91 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <sys/epoll.h>
-
+#include <string>
 
 #define MAXEVENTS 64
+#define PORT 8080
+
+   // std::string	hello = "<html>\n<body>\n\n<h2>HTML Buttons</h2>\n<p>HTML buttons are defined with the button tag:</p>\n\n<button>Click me</button>\n\n</body>\n</html>";
+    std::string	hello = "HTTP/1.1 200 OK\nContent-Type: text/html;charset=UTF-8\nContent-Length: 1800\n\n<html>\n<body>\n\n<h2>HTML Buttons</h2>\n<p>HTML buttons are defined with the button tag:</p>\n\n<button>Click me</button>\n\n</body>\n</html>";
+
 
 static int
 create_and_bind (char *port)
 {
-	struct addrinfo hints;
-	struct addrinfo *result, *rp;
-	int s, sfd;	
-	memset (&hints, 0, sizeof (struct addrinfo));
-	hints.ai_family = AF_UNSPEC;     /* Return IPv4 and IPv6 choices */
-	hints.ai_socktype = SOCK_STREAM; /* We want a TCP socket */
-	hints.ai_flags = AI_PASSIVE;     /* All interfaces */	
-	s = getaddrinfo (NULL, port, &hints, &result);
-	if (s != 0)
-	{
-		fprintf (stderr, "getaddrinfo: %s\n", gai_strerror (s));
-		return -1;
-	}	
-	for (rp = result; rp != NULL; rp = rp->ai_next)
-	{
-		sfd = socket (rp->ai_family, rp->ai_socktype, rp->ai_protocol);
-		if (sfd == -1)
-			continue;	
-		s = bind (sfd, rp->ai_addr, rp->ai_addrlen);
-		if (s == 0)
-			{
-			/* We managed to bind successfully! */
-			break;
-			}	
-		close (sfd);
-	}	
-	if (rp == NULL)
-	{
-		fprintf (stderr, "Could not bind\n");
-		return -1;
-	}	
-	freeaddrinfo (result);	
-	return sfd;
+
+	int server_fd, new_socket; long valread;
+    struct sockaddr_in address;
+    int addrlen = sizeof(address);
+    // Only this line has been changed. Everything is same.
+    
+    // Creating socket file descriptor
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) // il faut que ca soit inf a 0 pour moi
+    {
+        perror("In socket");
+        exit(EXIT_FAILURE);
+    }
+	address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons( PORT );
+    
+    memset(address.sin_zero, '\0', sizeof address.sin_zero);
+	int nb = 1;
+	if(setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &nb, sizeof(int)) == -1)
+        exit(EXIT_FAILURE);
+
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address))<0)
+    {
+        perror("In bind");
+        exit(EXIT_FAILURE);
+    }
+	return (server_fd);
 }
+
+// static int
+// create_and_bind (char *port)
+// {
+// 	struct addrinfo hints;
+// 	struct addrinfo *result, *rp;
+// 	int s, sfd;	
+// 	memset (&hints, 0, sizeof (struct addrinfo));
+// 	hints.ai_family = AF_UNSPEC;     /* Return IPv4 and IPv6 choices */
+// 	hints.ai_socktype = SOCK_STREAM; /* We want a TCP socket */
+// 	hints.ai_flags = AI_PASSIVE;     /* All interfaces */	
+// 	s = getaddrinfo (NULL, port, &hints, &result);
+// 	if (s != 0)
+// 	{
+// 		fprintf (stderr, "getaddrinfo: %s\n", gai_strerror (s));
+// 		return -1;
+// 	}	
+// 	for (rp = result; rp != NULL; rp = rp->ai_next)
+// 	{
+// 		sfd = socket (rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+// 		if (sfd == -1)
+// 			continue;	
+// 		s = bind (sfd, rp->ai_addr, rp->ai_addrlen);
+// 		if (s == 0)
+// 			{
+// 			/* We managed to bind successfully! */
+// 			break;
+// 			}	
+// 		close (sfd);
+// 	}	
+// 	if (rp == NULL)
+// 	{
+// 		fprintf (stderr, "Could not bind\n");
+// 		return -1;
+// 	}	
+// 	freeaddrinfo (result);	
+// 	return sfd;
+// }
 
 static int
 make_socket_non_blocking (int sfd)
 {
-	int flags, s;	
-	flags = fcntl (sfd, F_GETFL, 0);
-	if (flags == -1)
-	{
-		perror ("fcntl");
-		return -1;
-	}	
-	flags |= O_NONBLOCK;
-	s = fcntl (sfd, F_SETFL, flags);
+	int s;	
+
+	s = fcntl (sfd, F_SETFL, O_NONBLOCK);
 	if (s == -1)
 	{
 		perror ("fcntl");
@@ -71,8 +102,7 @@ make_socket_non_blocking (int sfd)
 	return 0;
 }
 
-int
-main (int argc, char *argv[])
+int	main (int argc, char *argv[])
 {
 	int sfd, s;
 	int efd;
@@ -203,7 +233,8 @@ main (int argc, char *argv[])
 		                break;
 		              }	
 		            /* Write the buffer to standard output */
-		            s = write (1, buf, count);
+		            //s = write (1, buf, count);
+		            s = write (events[i].data.fd, hello.c_str(), count);
 		            if (s == -1)
 		              {
 		                perror ("write");
