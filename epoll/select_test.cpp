@@ -168,12 +168,13 @@ int main(int argc , char *argv[])
 	    //inform user of socket number - used in send and receive commands
 	    printf("New connection , socket fd is %d , ip is : %s , port : %d\n" , new_socket , inet_ntoa(address.sin_addr) , ntohs
 	      (address.sin_port));
-	
+
+		//! jai desactiver le send ici pour le mettre en bas ce qui pour moi est bcp plus logique
 	    //send new connection greeting message
-	    if( send(new_socket, message, strlen(message), 0) != (ssize_t)strlen(message) )
-	    {
-	      perror("send");
-	    }
+	    //if( send(new_socket, message, strlen(message), 0) != (ssize_t)strlen(message) )
+	    //{
+	    //  perror("send");
+	    //}
 	
 	    puts("Welcome message sent successfully");
 	
@@ -230,6 +231,7 @@ int main(int argc , char *argv[])
 	       buffer[valread] = '\0';
 			//send(sd , buffer , strlen(buffer) , 0 );
 			std::cout << BBLU << buffer << CRESET << std::endl; //BUG gustave added this line
+			send(new_socket, message, strlen(message), 0);
 	     }
 	   }
 	 }
