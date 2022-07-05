@@ -1,39 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   _singleton.hpp                                     :+:      :+:    :+:   */
+/*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/06/29 17:56:14 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/06/29 17:59:20 by mamaurai         ###   ########.fr       */
+/*   Created: 2022/07/04 10:11:19 by mamaurai          #+#    #+#             */
+/*   Updated: 2022/07/05 14:11:51 by mamaurai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef _SINGLETON_HPP
-# define _SINGLETON_HPP
+#ifndef WEBSERV_HPP
+# define WEBSERV_HPP
 
+#include <vector>
+#include <iostream>
+#include <cstring>
+#include <stdint.h>
+#include <algorithm>
+#include <iostream>
+#include <fstream>
+#include <iosfwd>
+#include <cctype>
+
+extern int g_debug_prog_level;
+
+#include "_colors.hpp"
 #include "_utils.hpp"
+#include "Location.hpp"
+#include "Server.hpp"
+#include "Configuration.hpp"
 
-_BEGIN_NAMESPACE_WEBSERV
+extern INLINE_NAMESPACE::Configuration g_config;
 
-class S
-{
-    public:
-        static S& getInstance() {
-            static S    instance;
-            return (instance);
-        }
-	
-    private:
-        S() { }
-
-    public:
-        S(S const&)               = delete;
-        void operator=(S const&)  = delete;
-
-};
-
-_END_NAMESPACE_WEBSERV
-
-#endif
+#endif /* WEBSERV_HPP */

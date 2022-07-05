@@ -1,12 +1,33 @@
-# test comment
+#test comment
 
-server
-{
+server 
+{ 
 	server_name exemple.fr;
-	listen 3200 default_server;
+	listen 3200
+	error_page 404 example_html/bar.html
+	client_max_body_size 1000000
+	
+	location /index
+	{
+		allow_methods GET POST DELETE
+		return 301 /index/error
+		root /root
+		index /index/1
+		auto_index on
+		cgi .php ./www/bin/php-cgi
+		upload /home/upload
+	}
+
 }
 
-server {
-	client_max_body_size 100M;
-	error_page 404 /custom_404.html;		
-}
+
+
+
+
+
+
+
+
+
+
+
