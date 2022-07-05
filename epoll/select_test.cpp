@@ -14,12 +14,14 @@
 #define TRUE 1
 #define FALSE 0
 #define PORT 8888
+#define MAX_CONNECTIONS 100
+#define MAX_CLIENT 30
   
 int main(int argc , char *argv[])
 {
   int opt = TRUE;
-  int master_socket , addrlen , new_socket , client_socket[30] ,
-    max_clients = 30 , activity, i , valread , sd;
+  int master_socket , addrlen , new_socket , client_socket[MAX_CLIENT] ,
+    max_clients = MAX_CLIENT , activity, i , valread , sd;
   int max_sd;
   struct sockaddr_in address;
     
@@ -59,10 +61,6 @@ int main(int argc , char *argv[])
   address.sin_family = AF_INET;
   address.sin_addr.s_addr = INADDR_ANY;
   address.sin_port = htons( PORT );
-    
-	int nb = 1;
-	if(setsockopt(master_socket, SOL_SOCKET, SO_REUSEADDR, &nb, sizeof(int)) == -1)
-        exit(EXIT_FAILURE);
 
   //bind the socket to localhost port 8888
   if (bind(master_socket, (struct sockaddr *)&address, sizeof(address))<0)
@@ -73,7 +71,7 @@ int main(int argc , char *argv[])
   printf("Listener on port %d \n", PORT);
     
   //try to specify maximum of 3 pending connections for the master socket
-  if (listen(master_socket, 3) < 0)
+  if (listen(master_socket, MAX_CONNECTIONS) < 0)
   {
     perror("listen");
     exit(EXIT_FAILURE);
