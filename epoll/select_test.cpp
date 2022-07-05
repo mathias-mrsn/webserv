@@ -174,10 +174,10 @@ int main(int argc , char *argv[])
 
 		//! jai desactiver le send ici pour le mettre en bas ce qui pour moi est bcp plus logique
 	    //send new connection greeting message
-	    if( send(new_socket, message.c_str(), strlen(message.c_str()), 0) != (ssize_t)strlen(message.c_str()) )
-	    {
-	      perror("send");
-	    }
+	    //if( send(new_socket, message.c_str(), strlen(message.c_str()), 0) != (ssize_t)strlen(message.c_str()) )
+	    //{
+	    //  perror("send");
+	    //}
 	
 	    puts("Welcome message sent successfully");
 	
@@ -234,9 +234,13 @@ int main(int argc , char *argv[])
 	       buffer[valread] = '\0';
 			//send(sd , buffer , strlen(buffer) , 0 );
 			std::cout << BBLU << buffer << CRESET << std::endl; //BUG gustave added this line
-			//send(new_socket, message, strlen(message), 0);
-			message.assign("HTTP/1.1 200 OK\nContent-Type: text/plain;charset=UTF-8\nContent-Length: 6\n\nsalut ca va!");
-	     }
+			//message.assign("HTTP/1.1 200 OK\nContent-Type: text/plain;charset=UTF-8\nContent-Length: 6\n\nsalut ca va!");
+			if( send(sd, message.c_str(), strlen(message.c_str()), 0) != (ssize_t)strlen(message.c_str()) )
+			{
+			  perror("send");
+			}
+	
+		}
 	   }
 	 }
 	}
