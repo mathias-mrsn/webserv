@@ -19,48 +19,50 @@
   
 int main(int argc , char *argv[])
 {
-  int opt = TRUE;
-  int master_socket , addrlen , new_socket , client_socket[MAX_CLIENT] ,
-    max_clients = MAX_CLIENT , activity, i , valread , sd;
-  int max_sd;
-  struct sockaddr_in address;
-    
-  char buffer[1025]; //data buffer of 1K
-    
-  //set of socket descriptors
-  fd_set readfds;
-    
-  //a message
-  //char *message = (char *)"ECHO Daemon v1.0 \r\n";
+	(void)argc;
+	(void)argv;
+	int opt = TRUE;
+	int master_socket , addrlen , new_socket , client_socket[MAX_CLIENT] ,
+		max_clients = MAX_CLIENT , activity, i , valread , sd;
+	int max_sd;
+	struct sockaddr_in address;
+	
+	char buffer[1025]; //data buffer of 1K
+	
+	//set of socket descriptors
+	fd_set readfds;
+	
+	//a message
+	//char *message = (char *)"ECHO Daemon v1.0 \r\n";
 	//char *message = (char *)"HTTP/1.1 200 OK\nContent-Type: text/html;charset=UTF-8\nContent-Length: 1800\n\n<html>\n<body>\n\n<h2>HTML Buttons</h2>\n<p>HTML buttons are defined with the button tag:</p>\n\n<button>Click me</button>\n\n</body>\n</html>";
 	char *message = (char *) "HTTP/1.1 200 OK\nContent-Type: text/plain;charset=UTF-8\nContent-Length: 12\n\nHello world!";
-  
-  //initialise all client_socket[] to 0 so not checked
-  for (i = 0; i < max_clients; i++)
-  {
-    client_socket[i] = 0;
-  }
-    
-  //create a master socket
-  if( (master_socket = socket(AF_INET , SOCK_STREAM , 0)) == 0)
-  {
-    perror("socket failed");
-    exit(EXIT_FAILURE);
-  }
-  
-  //set master socket to allow multiple connections ,
-  //this is just a good habit, it will work without this
-  if( setsockopt(master_socket, SOL_SOCKET, SO_REUSEADDR, (char *)&opt,
-    sizeof(opt)) < 0 )
-  {
-    perror("setsockopt");
-    exit(EXIT_FAILURE);
-  }
-  
-  //type of socket created
-  address.sin_family = AF_INET;
-  address.sin_addr.s_addr = INADDR_ANY;
-  address.sin_port = htons( PORT );
+
+	//initialise all client_socket[] to 0 so not checked
+	for (i = 0; i < max_clients; i++)
+	{
+		client_socket[i] = 0;
+	}
+	
+	//create a master socket
+	if( (master_socket = socket(AF_INET , SOCK_STREAM , 0)) == 0)
+	{
+		perror("socket failed");
+		exit(EXIT_FAILURE);
+	}
+
+	//set master socket to allow multiple connections ,
+	//this is just a good habit, it will work without this
+	if( setsockopt(master_socket, SOL_SOCKET, SO_REUSEADDR, (char *)&opt,
+		sizeof(opt)) < 0 )
+	{
+		perror("setsockopt");
+		exit(EXIT_FAILURE);
+	}
+
+	//type of socket created
+	address.sin_family = AF_INET;
+	address.sin_addr.s_addr = INADDR_ANY;
+	address.sin_port = htons( PORT );
 
   //bind the socket to localhost port 8888
   if (bind(master_socket, (struct sockaddr *)&address, sizeof(address))<0)
@@ -130,7 +132,7 @@ int main(int argc , char *argv[])
         (address.sin_port));
     
       //send new connection greeting message
-      if( send(new_socket, message, strlen(message), 0) != strlen(message) )
+      if( send(new_socket, message, strlen(message), 0) != (ssize_t)strlen(message) )
       {
         perror("send");
       }
