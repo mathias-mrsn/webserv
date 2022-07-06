@@ -194,6 +194,7 @@ int main(int argc , char *argv[])
 	
 	//std::string message = "HTTP/1.1 200 OK\nContent-Type: text/html;charset=UTF-8\nContent-Length: 1800\n\n<html>\n<body>\n\n<h2>HTML Buttons</h2>\n<p>HTML buttons are defined with the button tag:</p>\n\n<button>Click me</button>\n\n</body>\n</html>";
 
+	server.initialize_server();
 	server.run_server(message);
 
 	return 0;
