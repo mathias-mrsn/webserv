@@ -73,7 +73,10 @@ int main(int argc , char *argv[])
 	//a message
 	//char *message = (char *)"ECHO Daemon v1.0 \r\n";
 	//char *message = (char *)"HTTP/1.1 200 OK\nContent-Type: text/html;charset=UTF-8\nContent-Length: 1800\n\n<html>\n<body>\n\n<h2>HTML Buttons</h2>\n<p>HTML buttons are defined with the button tag:</p>\n\n<button>Click me</button>\n\n</body>\n</html>";
-	char *message = (char *) "HTTP/1.1 200 OK\nContent-Type: text/plain;charset=UTF-8\nContent-Length: 12\n\nHello world!";
+	//char *message = (char *) "HTTP/1.1 200 OK\nContent-Type: text/plain;charset=UTF-8\nContent-Length: 12\n\nHello world!";
+	std::string message = "HTTP/1.1 200 OK\nContent-Type: text/plain;charset=UTF-8\nContent-Length: 12\n\nHello world!";
+	
+	//std::string message = "HTTP/1.1 200 OK\nContent-Type: text/html;charset=UTF-8\nContent-Length: 1800\n\n<html>\n<body>\n\n<h2>HTML Buttons</h2>\n<p>HTML buttons are defined with the button tag:</p>\n\n<button>Click me</button>\n\n</body>\n</html>";
 
 	//initialise all client_socket[] to 0 so not checked
 	for (i = 0; i < max_clients; i++)
@@ -171,7 +174,7 @@ int main(int argc , char *argv[])
 
 		//! jai desactiver le send ici pour le mettre en bas ce qui pour moi est bcp plus logique
 	    //send new connection greeting message
-	    //if( send(new_socket, message, strlen(message), 0) != (ssize_t)strlen(message) )
+	    //if( send(new_socket, message.c_str(), strlen(message.c_str()), 0) != (ssize_t)strlen(message.c_str()) )
 	    //{
 	    //  perror("send");
 	    //}
@@ -231,8 +234,13 @@ int main(int argc , char *argv[])
 	       buffer[valread] = '\0';
 			//send(sd , buffer , strlen(buffer) , 0 );
 			std::cout << BBLU << buffer << CRESET << std::endl; //BUG gustave added this line
-			send(new_socket, message, strlen(message), 0);
-	     }
+			//message.assign("HTTP/1.1 200 OK\nContent-Type: text/plain;charset=UTF-8\nContent-Length: 6\n\nsalut ca va!");
+			if( send(sd, message.c_str(), strlen(message.c_str()), 0) != (ssize_t)strlen(message.c_str()) )
+			{
+			  perror("send");
+			}
+	
+		}
 	   }
 	 }
 	}
