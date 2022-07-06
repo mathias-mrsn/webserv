@@ -179,8 +179,6 @@ int main(int argc , char *argv[])
 	    //  perror("send");
 	    //}
 	
-	    puts("Welcome message sent successfully");
-	
 	    //add new socket to array of sockets
 	    for (i = 0; i < max_clients; i++)
 	    {
@@ -213,7 +211,7 @@ int main(int argc , char *argv[])
 	   {
 	     //Check if it was for closing , and also read the
 	     //incoming message
-	     if ((valread = read( sd , buffer, 1024)) == 0)
+	     if ((valread = recv( sd , buffer, 1024, 0)) == 0)
 	     {
 	       //Somebody disconnected , get his details and print
 	       getpeername(sd , (struct sockaddr*)&address , \
