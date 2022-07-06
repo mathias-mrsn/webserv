@@ -12,6 +12,8 @@
 
 /*Constructor*/
 
+_BEGIN_NAMESPACE_WEBSERV
+
 class	my_serv
 {
 	public:
@@ -72,5 +74,6 @@ class Multiplexing : public my_serv
 		std::vector<my_serv> servers; //TODO a enlever juste pour les test
 };
 
+_END_NAMESPACE_WEBSERV
 
 #endif

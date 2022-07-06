@@ -1,8 +1,10 @@
 #include "../incs/Multiplexing.hpp"
 
+_BEGIN_NAMESPACE_WEBSERV
+
 //!------------------------------CONSTRUCTOR----------------------------------
 
-Multiplexing::Multiplexing()
+INLINE_NAMESPACE::Multiplexing::Multiplexing()
 {
 	//type of socket created
 	_address.sin_family = AF_INET;
@@ -13,7 +15,7 @@ Multiplexing::Multiplexing()
 	_opt = true;
 }
 
-Multiplexing::Multiplexing(const Multiplexing& copy)
+INLINE_NAMESPACE::Multiplexing::Multiplexing(const Multiplexing& copy)
 {
 	if (this != &copy)
 	{
@@ -23,14 +25,14 @@ Multiplexing::Multiplexing(const Multiplexing& copy)
 
 //!------------------------------DESTRUCTOR-----------------------------------
 
-Multiplexing::~Multiplexing()
+INLINE_NAMESPACE::Multiplexing::~Multiplexing()
 {
 
 }
 
 //!------------------------------OPERATOR-------------------------------------
 
-Multiplexing	&	Multiplexing::operator=(const Multiplexing& copy)
+Multiplexing	&	INLINE_NAMESPACE::Multiplexing::operator=(const Multiplexing& copy)
 {
 	if (this != &copy)
 	{
@@ -41,14 +43,14 @@ Multiplexing	&	Multiplexing::operator=(const Multiplexing& copy)
 
 //!------------------------------FUNCTION-------------------------------------
 
-void Multiplexing::function_a_virer(void)
+void INLINE_NAMESPACE::Multiplexing::function_a_virer(void)
 {
 	servers.push_back(8080);
 	servers.push_back(8888);
 }
 
 
-void	Multiplexing::io_operation(std::string head_serv, int i)
+void	INLINE_NAMESPACE::Multiplexing::io_operation(std::string head_serv, int i)
 {
 	_sub_socket = _client_socket[i];
 	if (FD_ISSET( _sub_socket , &_readfds))
@@ -83,7 +85,7 @@ void	Multiplexing::io_operation(std::string head_serv, int i)
 	}
 }
 
-void	Multiplexing::accept_new_connection()
+void	INLINE_NAMESPACE::Multiplexing::accept_new_connection()
 {
 	//If something happened on the master socket ,
 	//then its an incoming connection
@@ -115,7 +117,7 @@ void	Multiplexing::accept_new_connection()
 	}
 }
 
-void	Multiplexing::manage_socket_set()
+void	INLINE_NAMESPACE::Multiplexing::manage_socket_set()
 {
  	//clear the socket set
 	FD_ZERO(&_readfds);
@@ -136,11 +138,11 @@ void	Multiplexing::manage_socket_set()
 	}
 }
 
-void	Multiplexing::run_server(std::string head_serv)
+void	INLINE_NAMESPACE::Multiplexing::run_server(std::string head_serv)
 {
 	//accept the incoming connection
 	_addrlen = sizeof(_address);
-	while(TRUE)
+	while(true)
 	{
 		manage_socket_set();
 		//wait for an activity on one of the sockets , timeout is NULL ,
@@ -157,7 +159,7 @@ void	Multiplexing::run_server(std::string head_serv)
 	}
 }
 
-void	Multiplexing::initialize_server()
+void	INLINE_NAMESPACE::Multiplexing::initialize_server()
 {
 	// [ ] boucle a faire
 	//initialise all client_socket[] to 0 so not checked
@@ -213,3 +215,5 @@ int main(int argc , char *argv[])
 
 	return 0;
 }
+
+_END_NAMESPACE_WEBSERV

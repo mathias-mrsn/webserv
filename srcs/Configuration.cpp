@@ -6,7 +6,7 @@
 /*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:38:48 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/07/05 14:12:16 by mamaurai         ###   ########.fr       */
+/*   Updated: 2022/07/06 13:59:58 by mamaurai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,20 +16,46 @@
 	TODO add _set_server_name in server class
 */
 
-bool
-str_is_print (std::string str) {
-	const char *s = str.c_str();
+// bool
+// str_is_print (std::string str) {
+// 	const char *s = str.c_str();
 	
-	for (size_t i = 0; i < str.length(); i++) {
-		if (!isprint(s[i]))
-			return (false);
+// 	for (size_t i = 0; i < str.length(); i++) {
+// 		if (!isprint(s[i]))
+// 			return (false);
+// 	}
+// 	return (true);
+// }
+
+void
+remove_comment_ (string_vector & v) {
+	string_vector::const_iterator it = v.begin();
+	std::string replace;
+
+	for (; it != v.end(); it++) {
+		if ((*it).find("#") != std::string::npos) {
+			int end = (*it).find("#");
+			replace = (*it).substr(0, end);
+			v.erase(it, v.end());
+			if (!replace.empty())
+				v.push_back(replace);
+			return;
+		}
 	}
-	return (true);
 }
 
-std::vector<std::string>
+// bool
+// is_last_elem (std::string str) {
+// 	if (str.find(";") == str.length()) {
+// 		return (true);
+// 	} else {
+// 		return (false);
+// 	}
+// }
+
+string_vector
 vector_spliter (std::string str) {
-	std::vector<std::string> vector;
+	string_vector vector;
 	std::string stockage;
 
 	std::replace( str.begin(), str.end(), '\t', ' '); 
@@ -47,78 +73,53 @@ vector_spliter (std::string str) {
     stockage = str.substr(start, end);
 	if (!stockage.empty())
 			vector.push_back(stockage);
-
+	remove_comment_(vector);
 	return (vector);
 }
 
 void
-INLINE_NAMESPACE::Configuration::_parse_server (std::ifstream &ifs) {
-	std::string 				buffer;
-	std::vector<std::string> 	v;
-	int							idx;
-	INLINE_NAMESPACE::Server server;
-	t_function_pair_server pairs[] = {	{&Server::_set_server_name, "server_name"},
-										{&Server::_set_listen, "listen"},
-										{&Server::_set_error_page, "error_page"},
-										{&Server::_set_client_max_body_size, "client_max_body_size"},
-										{NULL, ""}};
+INLINE_NAMESPACE::Configuration::parser (void) {
+	string_vector::const_iterator it = _lexer.begin();
 	
-
-	for (size_t i = 0; !ifs.eof(); i++) {
-		std::getline(ifs, buffer);
-		v = vector_spliter(buffer);
-		
-		if (i == 0 && (v.empty() || v[0] != "{"))
+	while (it != _lexer.end()) {
+		if (*it == "server" && ((it + 1) != _lexer.end() && (*(it + 1)) == "{")) {
+			INLINE_NAMESPACE::Server s;
+			it += 2;
+			s.create_server(it);
+			_servers.push_back(s);
+		} else {
 			throw Configuration::SyntaxError();
-		if (!v.empty() && v[0] == "}")
-			break;
-		for (idx = 0; !pairs[idx].str.empty(); idx++) {
-			if (v.empty() || v[0][0] == '#' || v[0][0] == '{' || v[0][0] == '}') {
-				break;
-			} else if (v[0] == pairs[idx].str) {
-				(server.*(pairs[idx].f))(v);
-				break;
-			} else if (v[0] == "location") {
-				server._parse_location(ifs, v);
-			}
 		}
-		if (pairs[idx].str.empty()) {
-			COUT(v[0]); // ! TO DELETE
-			throw (Server::InvalidServerBlock());
-		}
+		if (it != _lexer.end())
+			it++;
 	}
-	if (v.empty() || v[0] != "}" || v.size() != 1)
-		throw Configuration::SyntaxError();
-	_servers.push_back(server);
-	DEBUG_1(COUT(server));
 }
 
 void
-INLINE_NAMESPACE::Configuration::parse (std::string conf_file) {
+INLINE_NAMESPACE::Configuration::lexer (std::string conf_file) {
 	std::string 				buffer;
 	std::ifstream				ifs;
-	std::vector<std::string> 	v;
-	// t_function_pair_config 		pairs[] = {	{&Configuration::_parse_server, "server"},
-	// 										{&Configuration::_parse_location, "location"},
-	// 										{NULL, ""}};
-	
+	string_vector 	v;
+
 	ifs.open(conf_file);
 	if (ifs.fail()) {
 		throw Configuration::FileCannotBeOpened();
 	}
-
 	while (!ifs.eof()) {
 		std::getline(ifs, buffer);
 		v = vector_spliter(buffer);
-
 		
 		if (v.empty() || v[0][0] == '#') {
 			continue;
-		} else if (v[0] == "server") {
-			_parse_server(ifs);
+		} else {
+			_lexer.insert(_lexer.end(), v.begin(), v.end());
 		}
-		
+	}
+	if (_lexer.empty()) {
+		throw Configuration::InvalidFile();
 	}
 	ifs.close();
-	DEBUG_1(COUT(*this));
+	DEBUG_5(for (lexer_type::const_iterator it = _lexer.begin(); it != _lexer.end(); it++) {COUT(*it);})
+
+
 }

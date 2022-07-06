@@ -3,21 +3,22 @@
 server 
 { 
 	server_name exemple.fr;
-	listen 3200
-	error_page 404 example_html/bar.html
-	client_max_body_size 1000000
+	listen 3200;
+	error_page 404 example_html/bar.html;
+	client_max_body_size 1000000;
 	
 	location /index
 	{
-		allow_methods GET POST DELETE
-		return 301 /index/error
-		root /root
-		index /index/1
-		auto_index on
-		cgi .php ./www/bin/php-cgi
-		upload /home/upload
+		allow_methods GET POST DELETE;
+		root /root;
+		index /index/1;
+		
+		return 301 /index/error;
+		auto_index on;
+		cgi .php ./www/bin/php-cgi;
+		upload /home/upload;
 	}
-
+	
 }
 
 

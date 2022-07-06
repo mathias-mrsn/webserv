@@ -6,7 +6,7 @@
 /*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/01 16:28:05 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/07/04 12:53:03 by mamaurai         ###   ########.fr       */
+/*   Updated: 2022/07/06 07:39:24 by mamaurai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ main (int ac, char **av)
 		}
 		
 		try {
-			g_config.parse(av[((ac == 2) ? 1 : 2)]);
+			g_config.lexer(av[((ac == 2) ? 1 : 2)]);
+			g_config.parser();
 		} catch (std::exception &e) {
 			std::cerr << e.what() << std::endl;
 			return (EXIT_FAILURE);
