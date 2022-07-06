@@ -20,10 +20,10 @@ class Multiplexing
 		Multiplexing & operator=(const Multiplexing & copy);
 
 		void	initialize_server(void);
-		void	run_server(std::string message);
+		void	run_server(std::string head_serv);
 		void	manage_socket_set(void);
 		void	accept_new_connection(void);
-		void	io_operation(std::string message, int i);
+		void	io_operation(std::string head_serv, int i);
 
 	private:
 		int		_opt;
@@ -33,9 +33,9 @@ class Multiplexing
 		int		_client_socket[MAX_CLIENT];
 		int		_max_clients;
 		int		_activity;
-		int		_valread;
-		int		_sd;
-		int		_max_sd;
+		int		_bytes;
+		int		_sub_socket;
+		int		_max_sub_socket;
 		char	_buffer[1025];
 		fd_set	_readfds;
 		struct	sockaddr_in	_address;

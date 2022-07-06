@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 extern int g_debug_prog_level;
 

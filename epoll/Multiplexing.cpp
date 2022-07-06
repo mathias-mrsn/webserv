@@ -41,6 +41,115 @@ Multiplexing	&	Multiplexing::operator=(const Multiplexing& copy)
 
 //!------------------------------FUNCTION-------------------------------------
 
+void	Multiplexing::io_operation(std::string head_serv, int i)
+{
+	_sub_socket = _client_socket[i];
+	if (FD_ISSET( _sub_socket , &_readfds))
+	{
+		//Check if it was for closing , and also read the
+		//incoming head_serv
+		if ((_bytes = recv( _sub_socket , _buffer, 1024, 0)) == 0)
+		{
+			//Somebody disconnected , get his details and print
+			getpeername(_sub_socket , (struct sockaddr*)&_address , \
+				(socklen_t*)&_addrlen);
+			printf("Host disconnected , ip %s , port %d \n" ,
+				inet_ntoa(_address.sin_addr) , ntohs(_address.sin_port));
+			//Close the socket and mark as 0 in list for reuse
+			close( _sub_socket );
+			_client_socket[i] = 0;
+		}
+		//Echo back the head_serv that came in
+		else
+		{
+			//set the string terminating NULL byte on the end
+			//of the data read
+			_buffer[_bytes] = '\0';
+			//send(sd , buffer , strlen(buffer) , 0 );
+			std::cout << BBLU << _buffer << CRESET << std::endl; //BUG gustave added this line
+			//head_serv.assign("HTTP/1.1 200 OK\nContent-Type: text/plain;charset=UTF-8\nContent-Length: 6\n\nsalut ca va!");
+			if( send(_sub_socket, head_serv.c_str(), strlen(head_serv.c_str()), 0) != (ssize_t)strlen(head_serv.c_str()) )
+			{
+			  perror("send");
+			}
+		}
+	}
+}
+
+void	Multiplexing::accept_new_connection()
+{
+	//If something happened on the master socket ,
+	//then its an incoming connection
+	if (FD_ISSET(_master_socket, &_readfds))
+	{
+		if ((_new_socket = accept(_master_socket,
+			(struct sockaddr *)&_address, (socklen_t*)&_addrlen))<0)
+		{
+			perror("accept");
+			exit(EXIT_FAILURE);
+		}
+		//To change socket attribute and render him in non blocking mode
+		if(fcntl(_new_socket, F_SETFL, O_NONBLOCK) < 0)
+			perror("fcntl");
+		//inform user of socket number - used in send and receive commands
+		printf("New connection , socket fd is %d , ip is : %s , port : %d\n" , _new_socket , inet_ntoa(_address.sin_addr) , ntohs
+		  (_address.sin_port));
+		//add new socket to array of sockets
+		for (int i = 0; i < _max_clients; i++)
+		{
+			//if position is empty
+			if( _client_socket[i] == 0 )
+			{
+				_client_socket[i] = _new_socket;
+				printf("Adding to list of sockets as %d\n" , i);	
+				break;
+			}
+		}
+	}
+}
+
+void	Multiplexing::manage_socket_set()
+{
+ 	//clear the socket set
+	FD_ZERO(&_readfds);
+	//add master socket to set
+	FD_SET(_master_socket, &_readfds);
+	_max_sub_socket = _master_socket;
+	//add child sockets to set
+	for (int i = 0 ; i < _max_clients ; i++)
+	{
+		//socket descriptor
+		_sub_socket = _client_socket[i];
+		//if valid socket descriptor then add to read list
+		if(_sub_socket > 0)
+		  FD_SET( _sub_socket , &_readfds);
+		//highest file descriptor number, need it for the select function
+		if(_sub_socket > _max_sub_socket)
+		  _max_sub_socket = _sub_socket;
+	}
+}
+
+void	Multiplexing::run_server(std::string head_serv)
+{
+	//accept the incoming connection
+	_addrlen = sizeof(_address);
+	while(TRUE)
+	{
+		manage_socket_set();
+		//wait for an activity on one of the sockets , timeout is NULL ,
+		//so wait indefinitely
+		_activity = select( _max_sub_socket + 1 , &_readfds , NULL , NULL , NULL);
+
+		if ((_activity < 0) && (errno!=EINTR))
+		  printf("select error");
+		accept_new_connection();
+
+		//else its some IO operation on some other socket
+		for (int i = 0; i < _max_clients; i++)
+		  io_operation(head_serv, i);
+	}
+}
+
 void	Multiplexing::initialize_server()
 {
 	//initialise all client_socket[] to 0 so not checked
@@ -75,111 +184,7 @@ void	Multiplexing::initialize_server()
 	}
 }
 
-void	Multiplexing::manage_socket_set()
-{
- 	//clear the socket set
-	FD_ZERO(&_readfds);
-	//add master socket to set
-	FD_SET(_master_socket, &_readfds);
-	_max_sd = _master_socket;
-	//add child sockets to set
-	for (int i = 0 ; i < _max_clients ; i++)
-	{
-		//socket descriptor
-		_sd = _client_socket[i];
-		//if valid socket descriptor then add to read list
-		if(_sd > 0)
-		  FD_SET( _sd , &_readfds);
-		//highest file descriptor number, need it for the select function
-		if(_sd > _max_sd)
-		  _max_sd = _sd;
-	}
-}
 
-void	Multiplexing::accept_new_connection()
-{
-	//If something happened on the master socket ,
-	//then its an incoming connection
-	if (FD_ISSET(_master_socket, &_readfds))
-	{
-		if ((_new_socket = accept(_master_socket,
-			(struct sockaddr *)&_address, (socklen_t*)&_addrlen))<0)
-		{
-			perror("accept");
-			exit(EXIT_FAILURE);
-		}	
-		//inform user of socket number - used in send and receive commands
-		printf("New connection , socket fd is %d , ip is : %s , port : %d\n" , _new_socket , inet_ntoa(_address.sin_addr) , ntohs
-		  (_address.sin_port));
-		//add new socket to array of sockets
-		for (int i = 0; i < _max_clients; i++)
-		{
-			//if position is empty
-			if( _client_socket[i] == 0 )
-			{
-				_client_socket[i] = _new_socket;
-				printf("Adding to list of sockets as %d\n" , i);	
-				break;
-			}
-		}
-	}
-}
-
-void	Multiplexing::io_operation(std::string message, int i)
-{
-	_sd = _client_socket[i];
-	if (FD_ISSET( _sd , &_readfds))
-	{
-		//Check if it was for closing , and also read the
-		//incoming message
-		if ((_valread = recv( _sd , _buffer, 1024, 0)) == 0)
-		{
-			//Somebody disconnected , get his details and print
-			getpeername(_sd , (struct sockaddr*)&_address , \
-				(socklen_t*)&_addrlen);
-			printf("Host disconnected , ip %s , port %d \n" ,
-				inet_ntoa(_address.sin_addr) , ntohs(_address.sin_port));
-			//Close the socket and mark as 0 in list for reuse
-			close( _sd );
-			_client_socket[i] = 0;
-		}
-		//Echo back the message that came in
-		else
-		{
-			//set the string terminating NULL byte on the end
-			//of the data read
-			_buffer[_valread] = '\0';
-			//send(sd , buffer , strlen(buffer) , 0 );
-			std::cout << BBLU << _buffer << CRESET << std::endl; //BUG gustave added this line
-			//message.assign("HTTP/1.1 200 OK\nContent-Type: text/plain;charset=UTF-8\nContent-Length: 6\n\nsalut ca va!");
-			if( send(_sd, message.c_str(), strlen(message.c_str()), 0) != (ssize_t)strlen(message.c_str()) )
-			{
-			  perror("send");
-			}
-		}
-	}
-}
-
-void	Multiplexing::run_server(std::string message)
-{
-	//accept the incoming connection
-	_addrlen = sizeof(_address);
-	while(TRUE)
-	{
-		manage_socket_set();
-		//wait for an activity on one of the sockets , timeout is NULL ,
-		//so wait indefinitely
-		_activity = select( _max_sd + 1 , &_readfds , NULL , NULL , NULL);
-
-		if ((_activity < 0) && (errno!=EINTR))
-		  printf("select error");
-		accept_new_connection();
-
-		//else its some IO operation on some other socket
-		for (int i = 0; i < _max_clients; i++)
-		  io_operation(message, i);
-	}
-}
 
 int main(int argc , char *argv[])
 {
@@ -187,15 +192,15 @@ int main(int argc , char *argv[])
 	(void)argv;
 	Multiplexing	server;
 
-	//a message
-	//char *message = (char *)"HTTP/1.1 200 OK\nContent-Type: text/html;charset=UTF-8\nContent-Length: 1800\n\n<html>\n<body>\n\n<h2>HTML Buttons</h2>\n<p>HTML buttons are defined with the button tag:</p>\n\n<button>Click me</button>\n\n</body>\n</html>";
-	//char *message = (char *) "HTTP/1.1 200 OK\nContent-Type: text/plain;charset=UTF-8\nContent-Length: 12\n\nHello world!";
-	std::string message = "HTTP/1.1 200 OK\nContent-Type: text/plain;charset=UTF-8\nContent-Length: 12\n\nHello world!";
+	//a head_serv
+	//char *head_serv = (char *)"HTTP/1.1 200 OK\nContent-Type: text/html;charset=UTF-8\nContent-Length: 1800\n\n<html>\n<body>\n\n<h2>HTML Buttons</h2>\n<p>HTML buttons are defined with the button tag:</p>\n\n<button>Click me</button>\n\n</body>\n</html>";
+	//char *head_serv = (char *) "HTTP/1.1 200 OK\nContent-Type: text/plain;charset=UTF-8\nContent-Length: 12\n\nHello world!";
+	std::string head_serv = "HTTP/1.1 200 OK\nContent-Type: text/plain;charset=UTF-8\nContent-Length: 12\n\nHello world!";
 	
-	//std::string message = "HTTP/1.1 200 OK\nContent-Type: text/html;charset=UTF-8\nContent-Length: 1800\n\n<html>\n<body>\n\n<h2>HTML Buttons</h2>\n<p>HTML buttons are defined with the button tag:</p>\n\n<button>Click me</button>\n\n</body>\n</html>";
+	//std::string head_serv = "HTTP/1.1 200 OK\nContent-Type: text/html;charset=UTF-8\nContent-Length: 1800\n\n<html>\n<body>\n\n<h2>HTML Buttons</h2>\n<p>HTML buttons are defined with the button tag:</p>\n\n<button>Click me</button>\n\n</body>\n</html>";
 
 	server.initialize_server();
-	server.run_server(message);
+	server.run_server(head_serv);
 
 	return 0;
 }
