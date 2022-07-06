@@ -23,6 +23,15 @@
 #include <iosfwd>
 #include <cctype>
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <sys/time.h>
+
+#include <stdlib.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+
 extern int g_debug_prog_level;
 
 #include "_colors.hpp"

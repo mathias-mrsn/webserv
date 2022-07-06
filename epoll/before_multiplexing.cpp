@@ -19,42 +19,6 @@
 #define MAX_CONNECTIONS 100
 #define MAX_CLIENT 30
 
-/* std::string	find_path(char * buffer)
-{
-	std::string path = "";
-	int i = 5;
-	while (buffer[i] != ' ')
-	{
-		path += buffer[i];
-		i++;
-	}
-	return path;
-
-} 
-
-// ATTENTION IL NE FAUT PAS LE PREMIER / DANS LE PATH
-std::string	read_open(std::string path)
-{
-	//std::cout << BRED << path << CRESET << std::endl;
-	std::string content = "";
-	std::ifstream file(path.c_str());
-	if (file.is_open())
-	{
-		std::string line;
-		while (getline(file, line))
-		{
-			content += line + "\n";
-		}
-		file.close();
-	}
-	else
-	{
-		content = "Error 404: File not found";
-	}
-	//std::cout << BRED << content << CRESET ;
-	return content;
-} */
-
 int main(int argc , char *argv[])
 {
 	(void)argc;
@@ -64,12 +28,12 @@ int main(int argc , char *argv[])
 		max_clients = MAX_CLIENT , activity, i , valread , sd;
 	int max_sd;
 	struct sockaddr_in address;
-	
+
 	char buffer[1025]; //data buffer of 1K
 	
 	//set of socket descriptors
 	fd_set readfds;
-	
+
 	//a message
 	//char *message = (char *)"ECHO Daemon v1.0 \r\n";
 	//char *message = (char *)"HTTP/1.1 200 OK\nContent-Type: text/html;charset=UTF-8\nContent-Length: 1800\n\n<html>\n<body>\n\n<h2>HTML Buttons</h2>\n<p>HTML buttons are defined with the button tag:</p>\n\n<button>Click me</button>\n\n</body>\n</html>";
@@ -172,13 +136,6 @@ int main(int argc , char *argv[])
 	    printf("New connection , socket fd is %d , ip is : %s , port : %d\n" , new_socket , inet_ntoa(address.sin_addr) , ntohs
 	      (address.sin_port));
 
-		//! jai desactiver le send ici pour le mettre en bas ce qui pour moi est bcp plus logique
-	    //send new connection greeting message
-	    //if( send(new_socket, message.c_str(), strlen(message.c_str()), 0) != (ssize_t)strlen(message.c_str()) )
-	    //{
-	    //  perror("send");
-	    //}
-	
 	    //add new socket to array of sockets
 	    for (i = 0; i < max_clients; i++)
 	    {
@@ -192,16 +149,7 @@ int main(int argc , char *argv[])
 	      }
 	    }
 	  }
-	(void)valread; // BUG a virer dici
-	(void)buffer; // BUG a virer dici
-	/* 
-		!enfaite le code ci-dessous va permettre de recuperer les retours des clients (header) par exemple,
-		!tu peux tester avec un client tel que localhost:8888/example_html/form.html
-		! tu vas donc recuperer l'adress uri passer par le client et tu vas l'utiliser pour recuperer le contenu de la page
-		! tu peux aussi voir que en retour il y a deux headers, a voir si avec firefox il y a en un ou plus 
-		! le deuxieme header correspond a: favicon.ico qui est enfaite une icone symbolisant le site
-	*/
-	
+
 	 //else its some IO operation on some other socket
 	 for (i = 0; i < max_clients; i++)
 	 {
@@ -237,7 +185,6 @@ int main(int argc , char *argv[])
 			{
 			  perror("send");
 			}
-	
 		}
 	   }
 	 }
