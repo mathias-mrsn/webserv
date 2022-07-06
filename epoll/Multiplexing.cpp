@@ -41,6 +41,13 @@ Multiplexing	&	Multiplexing::operator=(const Multiplexing& copy)
 
 //!------------------------------FUNCTION-------------------------------------
 
+void Multiplexing::function_a_virer(void)
+{
+	servers.push_back(8080);
+	servers.push_back(8888);
+}
+
+
 void	Multiplexing::io_operation(std::string head_serv, int i)
 {
 	_sub_socket = _client_socket[i];
@@ -152,6 +159,7 @@ void	Multiplexing::run_server(std::string head_serv)
 
 void	Multiplexing::initialize_server()
 {
+	// [ ] boucle a faire
 	//initialise all client_socket[] to 0 so not checked
 	for (int i = 0; i < _max_clients; i++)
 		_client_socket[i] = 0;
@@ -199,6 +207,7 @@ int main(int argc , char *argv[])
 	
 	//std::string head_serv = "HTTP/1.1 200 OK\nContent-Type: text/html;charset=UTF-8\nContent-Length: 1800\n\n<html>\n<body>\n\n<h2>HTML Buttons</h2>\n<p>HTML buttons are defined with the button tag:</p>\n\n<button>Click me</button>\n\n</body>\n</html>";
 
+	server.function_a_virer();
 	server.initialize_server();
 	server.run_server(head_serv);
 
