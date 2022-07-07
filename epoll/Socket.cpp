@@ -7,14 +7,10 @@ _BEGIN_NAMESPACE_WEBSERV
 
 INLINE_NAMESPACE::Socket::Socket()
 {
-	//type of socket created
-	// _address.sin_family = AF_INET;
-	// _address.sin_addr.s_addr = INADDR_ANY;
-	// _address.sin_port = htons( PORT );
 	_max_clients = MAX_CLIENT;
 	_opt = true;
 
-	//Initialize port for Listen_server
+	//Initialize port for Listen_servers
 	// for (std::vector<Server>::iterator it = SERVERS.begin(); it != SERVERS.end(); ++it)
 	// 	_servers.push_back((*it).get_port());
 
@@ -62,116 +58,123 @@ std::vector<Listen_server>&	INLINE_NAMESPACE::Socket::get_servers(void)
 //!------------------------------FUNCTION-------------------------------------
 
 
-// void	INLINE_NAMESPACE::Socket::io_operation(std::string head_serv, int i)
-// {
-// 	_sub_socket = _client_socket[i];
-// 	if (FD_ISSET( _sub_socket , &_readfds))
-// 	{
-// 		//Check if it was for closing , and also read the
-// 		//incoming head_serv
-// 		if ((_bytes = recv( _sub_socket , _buffer, 1024, 0)) == 0)
-// 		{
-// 			//Somebody disconnected , get his details and print
-// 			getpeername(_sub_socket , (struct sockaddr*)&_address , \
-// 				(socklen_t*)&_addrlen);
-// 			printf("Host disconnected , ip %s , port %d \n" ,
-// 				inet_ntoa(_address.sin_addr) , ntohs(_address.sin_port));
-// 			//Close the socket and mark as 0 in list for reuse
-// 			close( _sub_socket );
-// 			_client_socket[i] = 0;
-// 		}
-// 		//Echo back the head_serv that came in
-// 		else
-// 		{
-// 			//set the string terminating NULL byte on the end
-// 			//of the data read
-// 			_buffer[_bytes] = '\0';
-// 			//send(sd , buffer , strlen(buffer) , 0 );
-// 			std::cout << BBLU << _buffer << CRESET << std::endl; //BUG gustave added this line
-// 			//head_serv.assign("HTTP/1.1 200 OK\nContent-Type: text/plain;charset=UTF-8\nContent-Length: 6\n\nsalut ca va!");
-// 			if( send(_sub_socket, head_serv.c_str(), strlen(head_serv.c_str()), 0) != (ssize_t)strlen(head_serv.c_str()) )
-// 			{
-// 			  perror("send");
-// 			}
-// 		}
-// 	}
-// }
+void	INLINE_NAMESPACE::Socket::io_operation(INLINE_NAMESPACE::Listen_server &instance, std::string head_serv, int i)
+{
+	_sub_socket = _client_socket[i];
+	if (FD_ISSET( _sub_socket , &_readfds))
+	{
+		//Check if it was for closing , and also read the
+		//incoming head_serv
+		if ((_bytes = recv( _sub_socket , _buffer, 1024, 0)) == 0)
+		{
+			//Somebody disconnected , get his details and print
+			getpeername(_sub_socket , (struct sockaddr*)&instance.get_address() , \
+				(socklen_t*)&_addrlen);
+			printf("Host disconnected , ip %s , port %d \n" ,
+				inet_ntoa(instance.get_address().sin_addr) , ntohs(instance.get_address().sin_port));
+			//Close the socket and mark as 0 in list for reuse
+			close( _sub_socket );
+			_client_socket[i] = 0;
+		}
+		//Echo back the head_serv that came in
+		else
+		{
+			//set the string terminating NULL byte on the end
+			//of the data read
+			_buffer[_bytes] = '\0';
+			//send(sd , buffer , strlen(buffer) , 0 );
+			std::cout << BBLU << _buffer << CRESET << std::endl; //BUG gustave added this line
+			//head_serv.assign("HTTP/1.1 200 OK\nContent-Type: text/plain;charset=UTF-8\nContent-Length: 6\n\nsalut ca va!");
+			if( send(_sub_socket, head_serv.c_str(), strlen(head_serv.c_str()), 0) != (ssize_t)strlen(head_serv.c_str()) )
+			{
+			  perror("send");
+			}
+		}
+	}
+}
 
-// void	INLINE_NAMESPACE::Socket::accept_new_connection()
-// {
-// 	//If something happened on the master socket ,
-// 	//then its an incoming connection
-// 	if (FD_ISSET(_master_socket, &_readfds))
-// 	{
-// 		if ((_new_socket = accept(_master_socket,
-// 			(struct sockaddr *)&_address, (socklen_t*)&_addrlen))<0)
-// 		{
-// 			perror("accept");
-// 			exit(EXIT_FAILURE);
-// 		}
-// 		//To change socket attribute and render him in non blocking mode
-// 		if(fcntl(_new_socket, F_SETFL, O_NONBLOCK) < 0)
-// 			perror("fcntl");
-// 		//inform user of socket number - used in send and receive commands
-// 		printf("New connection , socket fd is %d , ip is : %s , port : %d\n" , _new_socket , inet_ntoa(_address.sin_addr) , ntohs
-// 		  (_address.sin_port));
-// 		//add new socket to array of sockets
-// 		for (int i = 0; i < _max_clients; i++)
-// 		{
-// 			//if position is empty
-// 			if( _client_socket[i] == 0 )
-// 			{
-// 				_client_socket[i] = _new_socket;
-// 				printf("Adding to list of sockets as %d\n" , i);	
-// 				break;
-// 			}
-// 		}
-// 	}
-// }
+void	INLINE_NAMESPACE::Socket::accept_new_connection(INLINE_NAMESPACE::Listen_server &instance)
+{
+	//If something happened on the master socket ,
+	//then its an incoming connection
+	if (FD_ISSET(instance.get_master_socket(), &_readfds))
+	{
+		if ((_new_socket = accept(instance.get_master_socket(),
+			(struct sockaddr *)&instance.get_address(), (socklen_t*)&_addrlen))<0)
+		{
+			perror("accept");
+			exit(EXIT_FAILURE);
+		}
+		//To change socket attribute and render him in non blocking mode
+		if(fcntl(_new_socket, F_SETFL, O_NONBLOCK) < 0)
+			perror("fcntl");
+		//inform user of socket number - used in send and receive commands
+		printf("New connection , socket fd is %d , ip is : %s , port : %d\n" , _new_socket , inet_ntoa(instance.get_address().sin_addr) , ntohs
+		  (instance.get_address().sin_port));
+		//add new socket to array of sockets
+		for (int i = 0; i < _max_clients; i++)
+		{
+			//if position is empty
+			if( _client_socket[i] == 0 )
+			{
+				_client_socket[i] = _new_socket;
+				printf("Adding to list of sockets as %d\n" , i);	
+				break;
+			}
+		}
+	}
+}
 
-// void	INLINE_NAMESPACE::Socket::manage_socket_set()
-// {
-//  	//clear the socket set
-// 	FD_ZERO(&_readfds);
-// 	//add master socket to set
-// 	FD_SET(_master_socket, &_readfds);
-// 	_max_sub_socket = _master_socket;
-// 	//add child sockets to set
-// 	for (int i = 0 ; i < _max_clients ; i++)
-// 	{
-// 		//socket descriptor
-// 		_sub_socket = _client_socket[i];
-// 		//if valid socket descriptor then add to read list
-// 		if(_sub_socket > 0)
-// 		  FD_SET( _sub_socket , &_readfds);
-// 		//highest file descriptor number, need it for the select function
-// 		if(_sub_socket > _max_sub_socket)
-// 		  _max_sub_socket = _sub_socket;
-// 	}
-// }
+void	INLINE_NAMESPACE::Socket::manage_socket_set(INLINE_NAMESPACE::Listen_server &instance)
+{
+ 	//clear the socket set
+	FD_ZERO(&_readfds);
+	//add master socket to set
+	FD_SET(instance.get_master_socket(), &_readfds);
+	_max_sub_socket = instance.get_master_socket();
+	//add child sockets to set
+	for (int i = 0 ; i < _max_clients ; i++)
+	{
+		//socket descriptor
+		_sub_socket = _client_socket[i];
+		//if valid socket descriptor then add to read list
+		if(_sub_socket > 0)
+		  FD_SET( _sub_socket , &_readfds);
+		//highest file descriptor number, need it for the select function
+		if(_sub_socket > _max_sub_socket)
+		  _max_sub_socket = _sub_socket;
+	}
+}
 
-// void	INLINE_NAMESPACE::Socket::run_server(std::string head_serv)
-// {
-// 	//accept the incoming connection
-// 	_addrlen = sizeof(_address);
-// 	while(true)
-// 	{
-// 		manage_socket_set();
-// 		//wait for an activity on one of the sockets , timeout is NULL ,
-// 		//so wait indefinitely
-// 		_activity = select( _max_sub_socket + 1 , &_readfds , NULL , NULL , NULL);
+void	INLINE_NAMESPACE::Socket::run_servers(std::string head_serv)
+{
+	//accept the incoming connection
+	//std::vector<INLINE_NAMESPACE::Listen_server>::iterator it = get_servers().begin();
+	while(true)
+	{
+		for (std::vector<INLINE_NAMESPACE::Listen_server>::iterator it = get_servers().begin(); it !=  get_servers().end(); it++)
+		{
+			
+			_addrlen = sizeof((*it).get_address());
+			manage_socket_set(*it);
+			//wait for an activity on one of the sockets , timeout is NULL ,
+			//so wait indefinitely
+			//TODO Need to implement tmp var to create chuck successfully
+			_activity = select( _max_sub_socket + 1 , &_readfds , NULL , NULL , NULL);
 
-// 		if ((_activity < 0) && (errno!=EINTR))
-// 		  printf("select error");
-// 		accept_new_connection();
+			if ((_activity < 0) && (errno!=EINTR))
+			  printf("select error");
+			accept_new_connection(*it);
 
-// 		//else its some IO operation on some other socket
-// 		for (int i = 0; i < _max_clients; i++)
-// 		  io_operation(head_serv, i);
-// 	}
-// }
+			//else its some IO operation on some other socket
+			for (int i = 0; i < _max_clients; i++)
+			  io_operation(*it, head_serv, i);
+			
+		}
+	}
+}
 
-void	INLINE_NAMESPACE::Socket::initialize_socket(INLINE_NAMESPACE::Listen_server instance)
+void	INLINE_NAMESPACE::Socket::initialize_socket(INLINE_NAMESPACE::Listen_server &instance)
 {
 	// [ ] boucle a faire
 	//ininstanceialise all client_socket[] to 0 so not checked
@@ -236,7 +239,7 @@ int main(int argc , char *argv[])
 	//std::string head_serv = "HTTP/1.1 200 OK\nContent-Type: text/html;charset=UTF-8\nContent-Length: 1800\n\n<html>\n<body>\n\n<h2>HTML Buttons</h2>\n<p>HTML buttons are defined with the button tag:</p>\n\n<button>Click me</button>\n\n</body>\n</html>";
 
 	server.initialize_servers();
-	// server.run_server(head_serv);
+	server.run_servers(head_serv);
 
 	return 0;
 }

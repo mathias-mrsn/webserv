@@ -23,12 +23,13 @@ class Socket // : public Listen_server
 
 		Socket & operator=(const Socket & copy);
 
-		void	initialize_socket(INLINE_NAMESPACE::Listen_server it); // Initialize one server
+		void	initialize_socket(INLINE_NAMESPACE::Listen_server &instance); // Initialize one server
 		void	initialize_servers(void); // initialise all of the servers
-		void	run_server(std::string head_serv);
-		void	manage_socket_set(void);
-		void	accept_new_connection(void);
-		void	io_operation(std::string head_serv, int i);
+		void	run_servers(std::string head_serv); // Run one serveur
+
+		void	manage_socket_set(INLINE_NAMESPACE::Listen_server &instance);
+		void	accept_new_connection(INLINE_NAMESPACE::Listen_server &instance);
+		void	io_operation(INLINE_NAMESPACE::Listen_server &instance, std::string head_serv, int i);
 		std::vector<Listen_server>&	get_servers(void);
 
 	private:

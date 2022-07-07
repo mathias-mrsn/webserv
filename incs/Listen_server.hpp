@@ -12,8 +12,8 @@ class	Listen_server
 		Listen_server(void);
 		~Listen_server(void);
 
-		int		get_port(void);
-		int		get_master_socket(void) const;
+		int		&get_port(void);
+		int		&get_master_socket(void);
 		struct	sockaddr_in	& get_address(void);
 		
 		void	set_master_socket(int new_socket);

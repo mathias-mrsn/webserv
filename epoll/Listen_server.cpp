@@ -4,6 +4,7 @@
 INLINE_NAMESPACE::Listen_server::Listen_server(int port) :
  _port(port)
 {
+	//type of socket created
 	_address.sin_family = AF_INET;
 	_address.sin_addr.s_addr = INADDR_ANY;
 	_address.sin_port = htons(port);
@@ -22,12 +23,12 @@ INLINE_NAMESPACE::Listen_server::~Listen_server()
 }
 
 
-int	INLINE_NAMESPACE::Listen_server::get_port(void)
+int	&INLINE_NAMESPACE::Listen_server::get_port(void)
 {
 	return (this->_port);
 }
 
-int	INLINE_NAMESPACE::Listen_server::get_master_socket(void) const
+int	&INLINE_NAMESPACE::Listen_server::get_master_socket(void)
 {
 	return (this->_master_socket);
 }
