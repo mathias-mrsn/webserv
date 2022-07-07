@@ -7,13 +7,13 @@
 #define FALSE 0
 #define PORT 8888
 #define MAX_CONNECTIONS 100
-#define MAX_CLIENT 30
+
 #define NB_SERVER 2
 
 /*Constructor*/
 _BEGIN_NAMESPACE_WEBSERV
 
-class Socket // : public Listen_server
+class Socket
 {
 	public:
 		Socket();
@@ -35,16 +35,16 @@ class Socket // : public Listen_server
 	private:
 		int		_opt;
 		//int		_master_socket;
-		int		_addrlen;
+		// int		_addrlen;
 		int		_new_socket;
-		int		_client_socket[MAX_CLIENT];
+		// int		_client_socket[MAX_CLIENT];
 		int		_max_clients;
 		int		_activity;
 		int		_bytes;
-		int		_sub_socket;
-		int		_max_sub_socket;
-		char	_buffer[1025];
-		fd_set	_readfds;
+		// int		_sub_socket;
+		// int		_max_sub_socket;
+		// char	_buffer[1025];
+		// fd_set	_readfds;
 		//struct	sockaddr_in	_address;
 		std::vector<Listen_server>	_servers; //TODO a enlever juste pour les test
 };

@@ -23,6 +23,8 @@ INLINE_NAMESPACE::Listen_server::~Listen_server()
 }
 
 
+//!------------------------------GETTERS--------------------------------
+
 int	&INLINE_NAMESPACE::Listen_server::get_port(void)
 {
 	return (this->_port);
@@ -38,7 +40,44 @@ struct sockaddr_in	& INLINE_NAMESPACE::Listen_server::get_address(void)
 	return (this->_address);
 }
 
+int	*INLINE_NAMESPACE::Listen_server::get_client_socket(void)
+{
+	return (this->_client_socket);
+}
+
+int	&INLINE_NAMESPACE::Listen_server::get_sub_socket(void)
+{
+	return (this->_sub_socket);
+}
+
+int	&INLINE_NAMESPACE::Listen_server::get_max_sub_socket(void)
+{
+	return (this->_max_sub_socket);
+}
+
+fd_set	&INLINE_NAMESPACE::Listen_server::get_readfds(void)
+{
+	return (this->_readfds);
+}
+
+
+//!------------------------------SETTERS-------------------------------
+
 void	INLINE_NAMESPACE::Listen_server::set_master_socket(int new_socket)
 {
 	_master_socket = new_socket;
+}
+
+void	INLINE_NAMESPACE::Listen_server::set_client_socket(int client_socket, int index)
+{
+	_client_socket[index] = client_socket;
+}
+
+void	INLINE_NAMESPACE::Listen_server::set_sub_socket(int sub_socket)
+{
+	_sub_socket = sub_socket;
+}
+void	INLINE_NAMESPACE::Listen_server::set_max_sub_socket(int max_sub_socket)
+{
+	_max_sub_socket = max_sub_socket;
 }
