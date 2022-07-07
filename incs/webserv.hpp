@@ -40,8 +40,8 @@ extern int g_debug_prog_level;
 #include "Location.hpp"
 #include "Server.hpp"
 #include "Configuration.hpp"
-#include "Socket.hpp"
 #include "Listen_server.hpp"
+#include "Socket.hpp"
 
 extern INLINE_NAMESPACE::Configuration g_config;
 
