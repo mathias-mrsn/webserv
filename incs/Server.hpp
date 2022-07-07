@@ -82,6 +82,7 @@ class Server {
 			}
 			return (o);
 		}
+		int	get_port(void);
 
 		
 		EXCEPTION(InvalidServerBlock, "configuration_file : syntax error in server block")

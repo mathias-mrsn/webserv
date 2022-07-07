@@ -1,21 +1,28 @@
-#include "../incs/Multiplexing.hpp"
+#include "../incs/Socket.hpp"
 
 _BEGIN_NAMESPACE_WEBSERV
 
 //!------------------------------CONSTRUCTOR----------------------------------
 
-INLINE_NAMESPACE::Multiplexing::Multiplexing()
+INLINE_NAMESPACE::Socket::Socket()
 {
 	//type of socket created
-	_address.sin_family = AF_INET;
-	_address.sin_addr.s_addr = INADDR_ANY;
-	_address.sin_port = htons( PORT );
-
+	// _address.sin_family = AF_INET;
+	// _address.sin_addr.s_addr = INADDR_ANY;
+	// _address.sin_port = htons( PORT );
 	_max_clients = MAX_CLIENT;
 	_opt = true;
+
+	//Initialize port for Listen_server
+	// for (std::vector<Server>::iterator it = SERVERS.begin(); it != SERVERS.end(); ++it)
+	// 	_servers.push_back((*it).get_port());
+
+	//to test mutiple servers
+	for (int i = 0; i < NB_SERVER; i++)
+		_servers.push_back(8080 + i);
 }
 
-INLINE_NAMESPACE::Multiplexing::Multiplexing(const Multiplexing& copy)
+INLINE_NAMESPACE::Socket::Socket(const Socket& copy)
 {
 	if (this != &copy)
 	{
@@ -25,14 +32,14 @@ INLINE_NAMESPACE::Multiplexing::Multiplexing(const Multiplexing& copy)
 
 //!------------------------------DESTRUCTOR-----------------------------------
 
-INLINE_NAMESPACE::Multiplexing::~Multiplexing()
+INLINE_NAMESPACE::Socket::~Socket()
 {
 
 }
 
 //!------------------------------OPERATOR-------------------------------------
 
-Multiplexing	&	INLINE_NAMESPACE::Multiplexing::operator=(const Multiplexing& copy)
+Socket	&	INLINE_NAMESPACE::Socket::operator=(const Socket& copy)
 {
 	if (this != &copy)
 	{
@@ -43,14 +50,8 @@ Multiplexing	&	INLINE_NAMESPACE::Multiplexing::operator=(const Multiplexing& cop
 
 //!------------------------------FUNCTION-------------------------------------
 
-void INLINE_NAMESPACE::Multiplexing::function_a_virer(void)
-{
-	servers.push_back(8080);
-	servers.push_back(8888);
-}
 
-
-void	INLINE_NAMESPACE::Multiplexing::io_operation(std::string head_serv, int i)
+void	INLINE_NAMESPACE::Socket::io_operation(std::string head_serv, int i)
 {
 	_sub_socket = _client_socket[i];
 	if (FD_ISSET( _sub_socket , &_readfds))
@@ -85,7 +86,7 @@ void	INLINE_NAMESPACE::Multiplexing::io_operation(std::string head_serv, int i)
 	}
 }
 
-void	INLINE_NAMESPACE::Multiplexing::accept_new_connection()
+void	INLINE_NAMESPACE::Socket::accept_new_connection()
 {
 	//If something happened on the master socket ,
 	//then its an incoming connection
@@ -117,7 +118,7 @@ void	INLINE_NAMESPACE::Multiplexing::accept_new_connection()
 	}
 }
 
-void	INLINE_NAMESPACE::Multiplexing::manage_socket_set()
+void	INLINE_NAMESPACE::Socket::manage_socket_set()
 {
  	//clear the socket set
 	FD_ZERO(&_readfds);
@@ -138,7 +139,7 @@ void	INLINE_NAMESPACE::Multiplexing::manage_socket_set()
 	}
 }
 
-void	INLINE_NAMESPACE::Multiplexing::run_server(std::string head_serv)
+void	INLINE_NAMESPACE::Socket::run_server(std::string head_serv)
 {
 	//accept the incoming connection
 	_addrlen = sizeof(_address);
@@ -159,7 +160,7 @@ void	INLINE_NAMESPACE::Multiplexing::run_server(std::string head_serv)
 	}
 }
 
-void	INLINE_NAMESPACE::Multiplexing::initialize_server()
+void	INLINE_NAMESPACE::Socket::initialize_server()
 {
 	// [ ] boucle a faire
 	//initialise all client_socket[] to 0 so not checked
@@ -200,7 +201,7 @@ int main(int argc , char *argv[])
 {
 	(void)argc;
 	(void)argv;
-	Multiplexing	server;
+	Socket	server;
 
 	//a head_serv
 	//char *head_serv = (char *)"HTTP/1.1 200 OK\nContent-Type: text/html;charset=UTF-8\nContent-Length: 1800\n\n<html>\n<body>\n\n<h2>HTML Buttons</h2>\n<p>HTML buttons are defined with the button tag:</p>\n\n<button>Click me</button>\n\n</body>\n</html>";
@@ -209,7 +210,6 @@ int main(int argc , char *argv[])
 	
 	//std::string head_serv = "HTTP/1.1 200 OK\nContent-Type: text/html;charset=UTF-8\nContent-Length: 1800\n\n<html>\n<body>\n\n<h2>HTML Buttons</h2>\n<p>HTML buttons are defined with the button tag:</p>\n\n<button>Click me</button>\n\n</body>\n</html>";
 
-	server.function_a_virer();
 	server.initialize_server();
 	server.run_server(head_serv);
 

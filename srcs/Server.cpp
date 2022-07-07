@@ -105,6 +105,14 @@ INLINE_NAMESPACE::Server::_set_location (string_vector::const_iterator & it) {
 	}
 }
 
+//TODO FAIRE ATTENTION AU MERGE
+
+int
+INLINE_NAMESPACE::Server::get_port (void)
+{
+	return (this->_port);
+}
+
 void
 INLINE_NAMESPACE::Server::create_server (string_vector::const_iterator & it) {
 	int idx;
