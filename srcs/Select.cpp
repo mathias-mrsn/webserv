@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Select.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ndormoy <ndormoy@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:30:22 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/23 15:55:21 by ndormoy          ###   ########.fr       */
+/*   Updated: 2022/09/23 18:00:37 by mamaurai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,15 +145,12 @@ INLINE_NAMESPACE::Select::start(void) {
                                    buffer[j] = '\0';
                                }
                             	bytes = recv(_client_socket[i], buffer, 10024, 0);
-								//TODO: reparse ici seulement pour le premier appelle de recv
                                DEBUG_3(CNOUT(BBLU << "Updating : recv has read " << bytes << " bytes" << CRESET))
 							if (bytes == SYSCALL_ERR) {
-								// CNOUT(BBLU << "SYSCALLLLLLLLLLLL" << CRESET)
                                    DEBUG_5(CNOUT(BRED << "Error : recv() failed (l." << __LINE__ << ")" << CRESET))
 								disconnect_client(i);
 								break;
                                } else if (bytes == 0) {
-								// CNOUT(BRED << "INNNNNNNN" << CRESET)
                                    DEBUG_3(CNOUT(BBLU << "Updating : client disconnected = " << _client_socket[i] << "#" << CRESET))
 									disconnect_client(i);
 								break;
@@ -166,16 +163,12 @@ INLINE_NAMESPACE::Select::start(void) {
 									request->set_error_value(request->request_parser());
 									first = 1;
 								}
-								// CNOUT(BGRN<< "bytes : " << bytes << " size total : " << size_total << CRESET)
-                                // CNOUT(BRED << (unsigned long)atoll(request->get_params("Content-Length").c_str()) << CRESET)
 								if (size_total > (unsigned long)atoll(request->get_params("Content-Length").c_str()) /* - 353 */)
 								{
-									// CNOUT("FUCKKKKKKKKKKKKKKKKKKKKKK")
                                     break ;
                                 }
 								if (!request->max_body_size_check(size_total))
 								{
-									CNOUT(BMAG << "shutdown =========================" << CRESET)
 									shutdown(_client_socket[i], SHUT_RD);
 									break;
 								}
@@ -188,8 +181,6 @@ INLINE_NAMESPACE::Select::start(void) {
 						delete request;
 						continue;
                     }
-                    // CNOUT("SORTIIIIIIIIIIIIE")
-					// request->set_error_value(request->request_parser());
                     DEBUG_3(CNOUT(BBLU << "Updating : Request has been parsed" << CRESET))
                     DEBUG_1(webserv_log_input(*request);)
                     if (request->get_error_value() != 413 && request->get_body().size() > 0)
@@ -211,18 +202,15 @@ INLINE_NAMESPACE::Select::start(void) {
                 	    if (FD_ISSET(_client_socket[i], &_writefds))
                 	    {
                 	        if (tmp.empty())
-                	            CNOUT("AIIIIIE")
                 	        bytes = send(_client_socket[i], tmp.c_str(), tmp.size(), 0);
                 	        if (bytes == SYSCALL_ERR)
                 	        {
-                	            CNOUT("SYSCALL_ERR")
                 	            DEBUG_5(CNOUT(BRED << "Error : send() failed (l." << __LINE__ << ")" << CRESET))
                 	            disconnect_client(i);
                 	            break;
                 	        }
                 	        else if (bytes == 0)
                 	        {
-                	            CNOUT("BYTS = 0")
                 	            break;
                 	        }
                 	        usleep(300000);

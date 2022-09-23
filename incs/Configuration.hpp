@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Configuration.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mathias.mrsn <mathias.mrsn@student.42.f    +#+  +:+       +#+        */
+/*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:32:45 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/20 11:21:12 by mathias.mrs      ###   ########.fr       */
+/*   Updated: 2022/09/23 18:02:11 by mamaurai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

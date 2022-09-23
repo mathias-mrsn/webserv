@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   _utils.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ndormoy <ndormoy@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/07 15:33:04 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/23 15:43:34 by ndormoy          ###   ########.fr       */
+/*   Updated: 2022/09/23 18:00:50 by mamaurai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ str_is_print (std::string str) {
 int
 calculate_size_file (char *filename)
 {
-	// CNOUT(UMAG << filename << CRESET)
 	std::streampos begin,end;
 	std::ifstream myfile (filename, std::ios::binary);
 	if (myfile.is_open())
@@ -42,11 +41,9 @@ calculate_size_file (char *filename)
 		myfile.seekg (0, std::ios::end);
 		end = myfile.tellg();
 		myfile.close();
-		//std::cout << "size is: " << (end-begin) << " bytes.\n";
 	}
 	else
 	{
-		std::cerr << BRED << "Unable to open file" << CRESET << std::endl;
 		return (-1);
 	}
 	return (end - begin);

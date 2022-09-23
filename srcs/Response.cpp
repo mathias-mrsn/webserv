@@ -1,4 +1,16 @@
- #include "webserv.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Response.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/09/23 18:01:30 by mamaurai          #+#    #+#             */
+/*   Updated: 2022/09/23 18:01:34 by mamaurai         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "webserv.hpp"
 #include <iostream>
 #include <fstream>
 #include <dirent.h>
@@ -44,7 +56,7 @@ void INLINE_NAMESPACE::Response::manage_response_post(void) {
 	if (access(location_ptr->get_upload_path().c_str(), R_OK) < 0)
 	{
         if (location_ptr->get_upload_path().empty())
-		    set_error_value(502); // TODO Im not sure for the return value.
+		    set_error_value(502);
         else
             set_error_value(403);
 		return ;
@@ -54,7 +66,6 @@ void INLINE_NAMESPACE::Response::manage_response_post(void) {
     }
 
     if (location_ptr && !location_ptr->get_upload_path().empty() && isupload) {
-		CNOUT(UMAG << location_ptr->get_upload_path() << CRESET)
         create_upload_file(location_ptr->get_upload_path());
     } else if (location_ptr && !isupload) {
         int size = 0;
@@ -220,7 +231,6 @@ std::string INLINE_NAMESPACE::Response::auto_index (void) {
             
             index += "/";
             index += _request->get_path();
-            // CNOUT("--> " << _request->get_path() << " --> " << it->d_name);
             if (!_request->get_path().empty()) {
                 index += ((_request->get_path()[(_request->get_path().size() - 1)] == '/') ? "" : "/");
             }

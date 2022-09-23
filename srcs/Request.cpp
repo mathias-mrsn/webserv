@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ndormoy <ndormoy@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 14:38:10 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/23 15:38:32 by ndormoy          ###   ########.fr       */
+/*   Updated: 2022/09/23 17:59:25 by mamaurai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,22 +34,18 @@ find_server_ (std::string str) {
     if (pos != std::string::npos)
         port = str.substr(pos + 1, str.size());
     if (s_name.empty()) {
-        CNOUT("exit 3")
         return (NULL);
     }
     if (!port.empty() && (port.length() > 5 || !is_number_(port))) {
-        CNOUT("exit 4")
         return (NULL);
     }
     FOREACH_SERVER {
         if ((*it)->get_server_name() == s_name) {
             if (port.empty()) {
-                CNOUT("exit 1 -> " << (*it)->get_server_name())
                 return (*it);
             }
             for (std::vector<int>::const_iterator it2 = (*it)->get_port().begin(); it2 != (*it)->get_port().end(); it2++) {
                 if (*it2 == std::atoi(port.c_str())) {
-                    CNOUT("exit 1 -> " << (*it)->get_server_name())
                     return (*it);
                 }
             }
@@ -102,10 +98,6 @@ find_location_ (INLINE_NAMESPACE::Server * srv, std::string path) {
         }
         if (!tmp_path.empty() && tmp_path.length() != path.length())
             tmp_path = (tmp_path + ((tmp_path[tmp_path.length() - 1] != '/') ? "/" : ""));
-
-        // CNOUT("loc_path" << tmp_path);
-        // tmp_loc_path = (tmp_loc_path + ((tmp_loc_path[tmp_loc_path.length() - 1] != '/') ? "/" : ""));
-
         if ((tmp_path.empty() || path.rfind(tmp_path, 0) == 0) && max_size <= tmp_path.length()) {
             max_size = tmp_path.length();
             save = *it;
@@ -115,7 +107,6 @@ find_location_ (INLINE_NAMESPACE::Server * srv, std::string path) {
     if (!save) {
         return (NULL);
     } else {
-        //  CNOUT((*save))
         return (save);
     }
 }
@@ -301,7 +292,6 @@ bool	INLINE_NAMESPACE::Request::define_upload(void)
 	_content_file = _content_file.substr(_content_file.find("\r\n\r\n") + 4, _content_file.length());
 	if (_server->get_max_body_size() < _content_file.length())
 		return (false);
-	//CNOUT(BYEL <<  "INSIDE -------" << _content_file.length()<< CRESET)
 	return (true);
 }
 
@@ -342,7 +332,6 @@ void INLINE_NAMESPACE::Request::unchunk_body () {
 bool
 INLINE_NAMESPACE::Request::max_body_size_check(size_t size) {
 	if (_server && (size - _header_content.size() > _server->get_max_body_size())) {
-		CNOUT(BRED << "Error : Request body size is too big" << CRESET);
 		set_error_value(413);
 		return (false);
 	}

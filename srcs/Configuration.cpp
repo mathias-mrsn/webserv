@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Configuration.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mathias.mrsn <mathias.mrsn@student.42.f    +#+  +:+       +#+        */
+/*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:38:48 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/17 15:31:49 by mathias.mrs      ###   ########.fr       */
+/*   Updated: 2022/09/23 18:01:51 by mamaurai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
