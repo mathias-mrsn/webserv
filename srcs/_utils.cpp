@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   _utils.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/07 15:33:04 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/23 18:00:50 by mamaurai         ###   ########.fr       */
+/*   Updated: 2022/09/26 16:34:44 by gmary            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,21 +65,21 @@ is_header (const std::string & str) {
 	return (false);
 }
 
-std::string	read_file(std::string path)
+std::string    read_file(std::string path)
 {
-	std::string content = "";
-	std::ifstream file(path.c_str());
-	if (file.is_open())
-	{
-		std::string line;
-		while (getline(file, line)) {
+    std::string content = "";
+    std::ifstream file(path.c_str());
+    if (file.is_open())
+    {
+        std::string line;
+        while (getline(file, line)) {
             content += line + "\n";
         }
-		file.close();
-	}
-	else
-		content = "Problem reading file";
-	return content;
+        file.close();
+    }
+    // else
+    //     content = "Problem reading file";
+    return content;
 }
 
 bool

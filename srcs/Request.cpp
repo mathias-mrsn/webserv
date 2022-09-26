@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 14:38:10 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/23 17:59:25 by mamaurai         ###   ########.fr       */
+/*   Updated: 2022/09/26 16:35:03 by gmary            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,11 +218,19 @@ INLINE_NAMESPACE::Request::check_request (void) {
     }
     if (!path_is_valid(_construct_path)) {
         return (404);
-    } 
-	if (path_is_dir(_construct_path)) {
+    }
+
+    std::ifstream file(_construct_path.c_str());
+    if (!file.is_open()) {
+        file.close();
+        return (403);
+    }
+    file.close();
+
+    if (path_is_dir(_construct_path)) {
         return (403);
     } 
-	if (_server && _server->get_max_body_size() < _content_file.length()) {
+    if (_server && _server->get_max_body_size() < _content_file.length()) {
         return (413);
     }
     if (!(_location && _method & _location->get_methods())) {
