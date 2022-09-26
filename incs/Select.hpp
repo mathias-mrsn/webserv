@@ -6,7 +6,7 @@
 /*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:00:32 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/26 11:20:51 by gmary            ###   ########.fr       */
+/*   Updated: 2022/09/26 11:41:45 by gmary            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ class Select {
         void			_init_socket (void);
 		void			_incoming_msg(int i, int bytes, int first, char *buffer, Request *request);
 		void			_sending_msg(int i, int bytes, Request *request);
+		void			_manage_clients(int bytes, int first, char *buffer);
 
 	public:
 

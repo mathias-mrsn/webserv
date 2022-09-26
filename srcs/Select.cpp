@@ -6,7 +6,7 @@
 /*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:30:22 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/26 11:20:10 by gmary            ###   ########.fr       */
+/*   Updated: 2022/09/26 11:41:51 by gmary            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,26 @@ INLINE_NAMESPACE::Select::webserv_log_output(Response &response) {
     DEBUG_2(COUT(BMAG << "[Response send by server]" << CRESET << std::endl))
     DEBUG_2(COUT(BWHT << response.get_body() << CRESET << std::endl))
     DEBUG_2(COUT(BMAG << "[End of response]" << CRESET << std::endl))
+}
+
+void
+INLINE_NAMESPACE::Select::_manage_clients(int bytes, int first, char *buffer)
+{
+	for (int i = 0; i < MAX_CLIENT; i++) {
+			_size_total = bytes;
+			if (_client_socket[i] != 0 && FD_ISSET(_client_socket[i], &_readfds)) {
+					buffer[bytes] = '\0';
+					Request *		request = new Request();
+						DEBUG_3(CNOUT(BBLU << "Updating : POST Request is parsing..."))
+					_incoming_msg(i, bytes, first, buffer, request);
+					if (request->get_body().empty())
+					{
+						delete request;
+						continue;
+					}
+					_sending_msg(i , bytes, request);
+				}
+			}
 }
 
 void
@@ -192,6 +212,8 @@ void
 INLINE_NAMESPACE::Select::start(void) {
     _size_total = 0;
 
+	// struct timeval tv;
+	// tv.tv_usec = 20000000;
 	sigset_t set;
     memset(&set, 0, sizeof(sigset_t));
 	sigaddset(&set, SIGPIPE);
@@ -215,22 +237,7 @@ INLINE_NAMESPACE::Select::start(void) {
         for (int j = 0; j < 10025; j++) {
             buffer[j] = '\0';
         }
-        for (int i = 0; i < MAX_CLIENT; i++) {
-            _size_total = bytes;
-            if (_client_socket[i] != 0 && FD_ISSET(_client_socket[i], &_readfds)) {
-                    buffer[bytes] = '\0';
-                    Request *		request = new Request();
-                    // Request *request = new Request(buffer, bytes);
-                       DEBUG_3(CNOUT(BBLU << "Updating : POST Request is parsing..."))
-                    _incoming_msg(i, bytes, first, buffer, request);
-                    if (request->get_body().empty())
-                    {
-						delete request;
-						continue;
-                    }
-                    _sending_msg(i , bytes, request);
-                }
-            }
+        _manage_clients(bytes, first, buffer);
     }
 }
 
@@ -242,6 +249,7 @@ INLINE_NAMESPACE::Select::new_request(void) {
             int addrlen = it->get_addrlen();
             if ((_new_socket = accept(it->get_master_socket(), (struct sockaddr *) &(it->get_address()),
                                       (socklen_t *) &addrlen)) == SYSCALL_ERR) {
+				CNOUT(errno)
                 throw Select::fAcceptError();
             }
             if (fcntl(_new_socket, F_SETFL, O_NONBLOCK)) {
