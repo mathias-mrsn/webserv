@@ -6,7 +6,7 @@
 /*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:30:22 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/26 11:08:19 by gmary            ###   ########.fr       */
+/*   Updated: 2022/09/26 11:20:10 by gmary            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,48 @@ INLINE_NAMESPACE::Select::_init_socket (void) {
     }
 }
 
+void	INLINE_NAMESPACE::Select::_sending_msg(int i, int bytes, Request *request)
+{
+	DEBUG_3(CNOUT(BBLU << "Updating : Request has been parsed" << CRESET))
+	DEBUG_1(webserv_log_input(*request);)
+	if (request->get_error_value() != 413 && request->get_body().size() > 0)
+		request->max_body_size_check(_size_total);
+	DEBUG_3(CNOUT(BBLU << "Updating : creating response..." << CRESET))
+	Response response(request);
+	response.manage_response();
+	response.set_message_send(response.get_body());
+	DEBUG_3(CNOUT(BBLU << "Updating : Response has been created" << CRESET))
+	DEBUG_1(webserv_log_output(response);)
+	DEBUG_3(CNOUT(BBLU << "Updating : sending the response..." << CRESET))
+	size_t start = 0;
+	std::string tmp;
+	int	nb_piece = calculate_size_piece_file(response.get_message_send().size());
+	for (;start < response.get_message_send().size();)
+	{
+		tmp = response.get_message_send().substr(start, response.get_message_send().size() / nb_piece);
+		if (FD_ISSET(_client_socket[i], &_writefds))
+		{
+			bytes = send(_client_socket[i], tmp.c_str(), tmp.size(), 0);
+			if (bytes == SYSCALL_ERR)
+			{
+				DEBUG_5(CNOUT(BRED << "Error : send() failed (l." << __LINE__ << ")" << CRESET))
+				disconnect_client(i);
+				break;
+			}
+			else if (bytes == 0)
+			{
+				break;
+			}
+			usleep(300000);
+			start += bytes;
+		}
+	}
+	delete request;
+	if (response.get_cgi() != NULL)
+		delete response.get_cgi();
+	DEBUG_3(CNOUT(BBLU << "Updating : Response has been sent" << CRESET))
+}
+
 void    INLINE_NAMESPACE::Select::_incoming_msg(int i, int bytes, int first, char *buffer, Request *request)
 {
 	do {
@@ -186,45 +228,7 @@ INLINE_NAMESPACE::Select::start(void) {
 						delete request;
 						continue;
                     }
-                    DEBUG_3(CNOUT(BBLU << "Updating : Request has been parsed" << CRESET))
-                    DEBUG_1(webserv_log_input(*request);)
-                    if (request->get_error_value() != 413 && request->get_body().size() > 0)
-                        request->max_body_size_check(_size_total);
-                    DEBUG_3(CNOUT(BBLU << "Updating : creating response..." << CRESET))
-                    Response response(request);
-                    response.manage_response();
-                    response.set_message_send(response.get_body());
-
-                    DEBUG_3(CNOUT(BBLU << "Updating : Response has been created" << CRESET))
-                    DEBUG_1(webserv_log_output(response);)
-                    DEBUG_3(CNOUT(BBLU << "Updating : sending the response..." << CRESET))
-                    size_t start = 0;
-                    std::string tmp;
-                    int	nb_piece = calculate_size_piece_file(response.get_message_send().size());
-                    for (;start < response.get_message_send().size();)
-                	{
-                	    tmp = response.get_message_send().substr(start, response.get_message_send().size() / nb_piece);
-                	    if (FD_ISSET(_client_socket[i], &_writefds))
-                	    {
-                	        bytes = send(_client_socket[i], tmp.c_str(), tmp.size(), 0);
-                	        if (bytes == SYSCALL_ERR)
-                	        {
-                	            DEBUG_5(CNOUT(BRED << "Error : send() failed (l." << __LINE__ << ")" << CRESET))
-                	            disconnect_client(i);
-                	            break;
-                	        }
-                	        else if (bytes == 0)
-                	        {
-                	            break;
-                	        }
-                	        usleep(300000);
-                	        start += bytes;
-                	    }
-                	}
-                    delete request;
-                    if (response.get_cgi() != NULL)
-                        delete response.get_cgi();
-                    DEBUG_3(CNOUT(BBLU << "Updating : Response has been sent" << CRESET))
+                    _sending_msg(i , bytes, request);
                 }
             }
     }
