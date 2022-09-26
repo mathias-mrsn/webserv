@@ -6,7 +6,7 @@
 /*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:30:22 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/26 16:26:09 by gmary            ###   ########.fr       */
+/*   Updated: 2022/09/26 17:31:05 by gmary            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,14 @@ INLINE_NAMESPACE::Select::_watch_clients(void)
 {
 	int select_ret = select(get_max_sub_socket() + 1, &_readfds, &_writefds, NULL, NULL);
 		if (g_exit) {
+			for (int i = 0; i < MAX_CLIENT; i++) {
+				if (_client_socket[i] != 0) {
+					close(_client_socket[i]);
+				}
+			}
+			for (socket_type::iterator it = _sockets.begin(); it != _sockets.end(); it++) {
+				close(it->get_master_socket());
+			}
 			return (false);
 		} if (select_ret == SYSCALL_ERR) {
 			throw Select::fSelectError();
@@ -145,8 +153,23 @@ void	INLINE_NAMESPACE::Select::_sending_msg(int i, int bytes, Request *request)
 		request->max_body_size_check(_size_total);
 	DEBUG_3(CNOUT(BBLU << "Updating : creating response..." << CRESET))
 	Response response(request);
-	response.manage_response();
-	response.set_message_send(response.get_body());
+
+	try {
+		response.manage_response();
+		response.set_message_send(response.get_body());
+	} catch (const std::exception& e) {
+	
+		for (int i = 0; i < MAX_CLIENT; i++) {
+			if (_client_socket[i] != 0) {
+				close(_client_socket[i]);
+			}
+		}
+		for (socket_type::iterator it = _sockets.begin(); it != _sockets.end(); it++) {
+			close(it->get_master_socket());
+		}
+		throw std::runtime_error("cgi");
+	}
+	
 	DEBUG_3(CNOUT(BBLU << "Updating : Response has been created" << CRESET))
 	DEBUG_1(webserv_log_output(response);)
 	DEBUG_3(CNOUT(BBLU << "Updating : sending the response..." << CRESET))

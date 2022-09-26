@@ -6,7 +6,7 @@
 /*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/23 18:01:30 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/26 15:44:10 by gmary            ###   ########.fr       */
+/*   Updated: 2022/09/26 17:25:16 by gmary            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,7 @@ INLINE_NAMESPACE::Response::manage_error_page(void) {
 
 int
 INLINE_NAMESPACE::Response::manage_cgi(void) {
+
     Location *location_ptr = _request->get_location();
     Location::cgi_type cgi = location_ptr->get_cgi();
 
