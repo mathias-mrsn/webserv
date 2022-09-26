@@ -11,8 +11,8 @@ server {
 
 		return 403 www/error_pages/403.html;
 		auto_index on;
-		#cgi .php bin/php-cgi_ubuntu;
-		cgi .php bin/php-cgi;
+		cgi .php bin/php-cgi_ubuntu;
+		#cgi .php bin/php-cgi;
 		upload www;
 	}
 }

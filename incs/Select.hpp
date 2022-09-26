@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Select.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:00:32 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/23 18:02:26 by mamaurai         ###   ########.fr       */
+/*   Updated: 2022/09/26 10:58:45 by gmary            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,13 @@ class Select {
 		socket_type 	_sockets;
 		int				_max_sub_socket;
 		int				_client_socket[MAX_CLIENT];
+		size_t			_size_total;
 		
 	public:
 		Select (void) :
 			_sockets(),
-			_max_sub_socket(0)
+			_max_sub_socket(0),
+			_size_total(0)
 		{
 			for (int i = 0; i < MAX_CLIENT; i++) {
 				_client_socket[i] = 0;
@@ -43,7 +45,8 @@ class Select {
 		Select (const Select& ref) :
 			_sockets(),
 			_max_sub_socket(0),
-			_client_socket()
+			_client_socket(),
+			_size_total(0)
 		{
 			*this = ref;
 		}
@@ -69,7 +72,8 @@ class Select {
 		void			disconnect_client(int i);
 
     private:
-        void _init_socket (void);
+        void			_init_socket (void);
+		void			_incoming_msg(int i, int bytes, int first, char *buffer, Request *request);
 
 	public:
 
@@ -86,6 +90,7 @@ class Select {
 			_writefds = ref._writefds;
 			_sockets = ref._sockets;
 			_max_sub_socket = ref._max_sub_socket;
+			_size_total = ref._size_total;
 			for (int i = 0; i < MAX_CLIENT; i++)
 				_client_socket[i] = ref._client_socket[i];
 				
