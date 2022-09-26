@@ -6,7 +6,7 @@
 /*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:30:22 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/26 17:31:05 by gmary            ###   ########.fr       */
+/*   Updated: 2022/09/26 17:47:46 by gmary            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,6 +147,9 @@ INLINE_NAMESPACE::Select::_init_socket (void) {
 
 void	INLINE_NAMESPACE::Select::_sending_msg(int i, int bytes, Request *request)
 {
+	if (request->get_body().empty()) {
+		return;
+	}
 	DEBUG_3(CNOUT(BBLU << "Updating : Request has been parsed" << CRESET))
 	DEBUG_1(webserv_log_input(*request);)
 	if (request->get_error_value() != 413 && request->get_body().size() > 0)
