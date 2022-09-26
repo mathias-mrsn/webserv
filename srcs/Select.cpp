@@ -6,11 +6,23 @@
 /*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:30:22 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/26 11:41:51 by gmary            ###   ########.fr       */
+/*   Updated: 2022/09/26 11:46:41 by gmary            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
+
+bool
+INLINE_NAMESPACE::Select::_watch_clients(void)
+{
+	int select_ret = select(get_max_sub_socket() + 1, &_readfds, &_writefds, NULL, NULL);
+		if (g_exit) {
+			return (false);
+		} if (select_ret == SYSCALL_ERR) {
+			throw Select::fSelectError();
+		}
+	return (true);
+}
 
 void
 INLINE_NAMESPACE::Select::webserv_log_input(Request &request) {
@@ -226,13 +238,8 @@ INLINE_NAMESPACE::Select::start(void) {
         int bytes = 0;
         int	first = 0;
         _init_socket();
-		int select_ret = select(get_max_sub_socket() + 1, &_readfds, &_writefds, NULL, NULL);
-		if (g_exit) {
-			return;
-		} if (select_ret == SYSCALL_ERR) {
-			throw Select::fSelectError();
-		}
-
+		if (_watch_clients() == false)
+			return ;
 		new_request();
         for (int j = 0; j < 10025; j++) {
             buffer[j] = '\0';
