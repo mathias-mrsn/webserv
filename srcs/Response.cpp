@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/23 18:01:30 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/23 18:01:34 by mamaurai         ###   ########.fr       */
+/*   Updated: 2022/09/26 15:44:10 by gmary            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,14 +132,12 @@ INLINE_NAMESPACE::Response::manage_cgi(void) {
         }
     }
     if (_cgi == NULL) {
-		//delete _cgi;
         return (1);
     }
     _cgi->init();
     _cgi->start(this);
     _cgi->wait(this);
 	_cgi->free_env();
-	// delete _cgi;
     return (0);
 }
 

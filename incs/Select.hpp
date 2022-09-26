@@ -6,7 +6,7 @@
 /*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:00:32 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/26 11:44:22 by gmary            ###   ########.fr       */
+/*   Updated: 2022/09/26 15:54:36 by gmary            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,9 @@ class Select {
 		}
 		
 		~Select (void)
-		{ }
+		{ 
+			// _sockets.~vector();
+		}
 
 	public:
 		fd_set&			get_readfds (void) {return (_readfds);}

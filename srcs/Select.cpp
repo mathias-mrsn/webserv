@@ -6,7 +6,7 @@
 /*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:30:22 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/26 11:46:41 by gmary            ###   ########.fr       */
+/*   Updated: 2022/09/26 16:26:09 by gmary            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ INLINE_NAMESPACE::Select::_init_socket (void) {
     FD_ZERO(&_readfds);
     FD_ZERO(&_writefds);
     for (socket_type::iterator it = _sockets.begin(); it != _sockets.end(); ++it) {
-        if (fcntl(it->get_master_socket(), F_SETFL, O_NONBLOCK))
+        if (fcntl(it->get_master_socket(), F_SETFL, O_NONBLOCK |  FD_CLOEXEC))
             DEBUG_5(CNOUT(BRED << "Error : fcntl() failed (l." << __LINE__ << ")" << CRESET))
         FD_SET(it->get_master_socket(), &_readfds);
         if (it->get_master_socket() > get_max_sub_socket())
@@ -259,7 +259,7 @@ INLINE_NAMESPACE::Select::new_request(void) {
 				CNOUT(errno)
                 throw Select::fAcceptError();
             }
-            if (fcntl(_new_socket, F_SETFL, O_NONBLOCK)) {
+            if (fcntl(_new_socket, F_SETFL, O_NONBLOCK )) {
                 DEBUG_5(CNOUT(BRED << "Error : fcntl() failed (l." << __LINE__ << ")" << CRESET))
             }
         }

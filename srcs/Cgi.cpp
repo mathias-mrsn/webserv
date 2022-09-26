@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/02 14:43:52 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/21 13:00:39 by mamaurai         ###   ########.fr       */
+/*   Updated: 2022/09/26 16:29:34 by gmary            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ INLINE_NAMESPACE::Cgi::start (__attribute__((unused))Response * res) {
     int pip1[2];
     int pip2[2];
 
+    // res->set_error_value(512);
     DEBUG_3(CNOUT(BBLU << "Updating : starting CGI..." << CRESET));
     if (pipe(pip1) == SYSCALL_ERR || pipe(pip2) == SYSCALL_ERR) {
         DEBUG_5(CNOUT(BRED << "Error : pipe() failed (l." << __LINE__ << ")" << CRESET))
@@ -90,7 +91,6 @@ INLINE_NAMESPACE::Cgi::start (__attribute__((unused))Response * res) {
         DEBUG_5(CNOUT(BRED << "Error : write() failed (l." << __LINE__ << ")" << CRESET))
         return;
     }
-
     if ((pid = fork()) == SYSCALL_ERR) {
         return;
     } else if (pid == 0) {
@@ -112,14 +112,35 @@ INLINE_NAMESPACE::Cgi::start (__attribute__((unused))Response * res) {
             close(pip1[0]);
             close(pip2[1]);
             close(pip1[1]);
+            
+            
+            // this->set_output(create_html_error_page(502));
+            // this->get_request()->~Request();
+            delete this->get_request();
+            // delete _location;
+            CNERR(BRED  << "Error : execve failed (l." << __LINE__ << ")" << CRESET)
+            // std::exit(EXIT_FAILURE);
+            free_env();
+            // return;
+            // std::exit(EXIT_FAILURE);
+            //NONO
+            delete this;
+            // std::exit(EXIT_FAILURE);
+            throw   std::exception();
             // TODO free everything we need to free
         }
-        exit(EXIT_FAILURE);
+        // __cxa_finalize(NULL);
+        
+        // return ;
     } else {
+
         close(pip1[0]);
         close(pip2[1]);
         close(pip1[1]);
         _fd = pip2[0];
+        // this->set_output(create_html_error_page(512));
+        
+        // res->set_error_value(512);
     }
 }
 
