@@ -2,7 +2,7 @@
 
 int
 main (__attribute__((unused))int ac, __attribute__((unused))char **av, __attribute__((unused))char **env) {
-    std::cout   << "X-Powered-By: PHP/7.4.10\n"
+    std::cout   << "X-Powered-By: HW/0.0.0.0.0.1\n"
                 << "Content-type: text/html; charset=UTF-8\r\n\r\n";
 
     std::cout   << "<!DOCTYPE html>\n" 
