@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
+/*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:55:35 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/20 13:54:53 by gmary            ###   ########.fr       */
+/*   Updated: 2022/09/27 13:57:18 by mamaurai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ class Server {
 		Server (void) :
 			_port(),
 			_ip(""),
-			_max_body_size(8000000), //TODO check la taille max si cest bon on peut la mettre a 1Mo = 8Mb
+			_max_body_size(8000000),
 			_default(false),
 			_server_name("localhost"),
 			_error_pages(),

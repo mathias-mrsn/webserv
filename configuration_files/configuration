@@ -1,36 +1,41 @@
 server {
-	server_name localhost;
+	server_name exemple.fr;
 	listen 192.0.0.1:8080;
 	client_max_body_size 8m;
 
 	location /
 	{
-		allow_methods GET POST DELETE;
+	 	allow_methods GET;
+	 	return 404 www/error_pages/404.html;
 		root www;
 		index index.html;
+	 	auto_index on;
+		cgi .php bin/php-cgi_ubuntu;
+	}
 
+	location ./www {
+		allow_methods GET POST;
 		return 403 www/error_pages/403.html;
 		auto_index on;
 		cgi .php bin/php-cgi_ubuntu;
 		#cgi .php bin/php-cgi;
 		upload www;
 	}
-}
 
-server {
-	server_name exemple2.fr;
-	listen 192.0.0.1:8081;
-	client_max_body_size 8m;
+	location ./www/file_to_delete {
+		allow_methods GET DELETE;
+	}
 
-	location /
-	{
-		allow_methods GET POST DELETE;
-		root www;
-		index index.html;
+	location www/Coockie {
+		cgi .php bin/php-cgi_ubuntu;
+	}
 
-		return 403 www/error_pages/404.html;
-		auto_index off;
-		cgi .php bin/php-cgi;
-		upload www;
+	location www/Session {
+		cgi .php bin/php-cgi_ubuntu;
+	}
+
+	location www/Upload {
+		cgi .php bin/php-cgi_ubuntu;
+		upload ./www/Upload;
 	}
 }

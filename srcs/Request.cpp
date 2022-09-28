@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
+/*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 14:38:10 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/26 16:35:03 by gmary            ###   ########.fr       */
+/*   Updated: 2022/09/28 15:42:18 by mamaurai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,6 +205,7 @@ INLINE_NAMESPACE::Request::set_final_path (void) {
 		tmp = _path;
 	}
 	if (path_is_dir(tmp) && !_location->get_index().empty()) {
+		
         tmp += "/" + _location->get_index();
 	}
 	_construct_path = tmp;
@@ -216,25 +217,23 @@ INLINE_NAMESPACE::Request::check_request (void) {
     if (!_location) {
         return (403);
     }
-    if (!path_is_valid(_construct_path)) {
+    if (!(_location && _method & _location->get_methods())) {
+        return (405);
+    }
+    if (!path_is_valid((!_construct_path.empty()) ? _construct_path : "./")) {
         return (404);
     }
-
     std::ifstream file(_construct_path.c_str());
     if (!file.is_open()) {
         file.close();
         return (403);
     }
     file.close();
-
-    if (path_is_dir(_construct_path)) {
+	if (path_is_dir(_construct_path)) {
         return (403);
     } 
     if (_server && _server->get_max_body_size() < _content_file.length()) {
         return (413);
-    }
-    if (!(_location && _method & _location->get_methods())) {
-        return (405);
     }
     return (0);
 }

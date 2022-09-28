@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
+/*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/02 14:43:52 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/26 17:37:11 by gmary            ###   ########.fr       */
+/*   Updated: 2022/09/27 13:58:02 by mamaurai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,39 +116,17 @@ INLINE_NAMESPACE::Cgi::start (__attribute__((unused))Response * res) {
             close(0);
             close(1);
             close(2);
-            
-            // close(pip1[0]);
-            
-            
-            // this->set_output(create_html_error_page(502));
-            // this->get_request()->~Request();
             delete this->get_request();
-            // delete _location;
-            CNERR(BRED  << "Error : execve failed (l." << __LINE__ << ")" << CRESET)
-            // std::exit(EXIT_FAILURE);
             free_env();
-            // return;
-            // std::exit(EXIT_FAILURE);
-            //NONO
-            
             delete this;
-            // std::exit(EXIT_FAILURE);
             throw   std::exception();
-            // g_exit = 1;
-            // TODO free everything we need to free
         }
-        // __cxa_finalize(NULL);
-        
-        // return ;
     } else {
 
         close(pip1[0]);
         close(pip2[1]);
         close(pip1[1]);
         _fd = pip2[0];
-        // this->set_output(create_html_error_page(512));
-        
-        // res->set_error_value(512);
     }
 }
 

@@ -3,16 +3,30 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ndormoy <ndormoy@student.42.fr>            +#+  +:+       +#+         #
+#    By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/10 15:51:05 by gmary             #+#    #+#              #
-#    Updated: 2022/09/23 15:22:28 by ndormoy          ###   ########.fr        #
+#    Updated: 2022/09/27 14:49:02 by mamaurai         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = 		webserv
 
-SRCS =		${shell find ./srcs -name "*.cpp"}
+SRCS =		./srcs/Configuration.cpp \
+			./srcs/Location.cpp \
+			./srcs/parsing/checking.cpp \
+			./srcs/parsing/parsing.cpp \
+			./srcs/Server.cpp \
+			./srcs/_init.cpp \
+			./srcs/Select.cpp \
+			./srcs/Response.cpp \
+			./srcs/Socket.cpp \
+			./srcs/Header.cpp \
+			./srcs/Cgi.cpp \
+			./srcs/Request.cpp \
+			./srcs/_utils.cpp \
+			./srcs/main.cpp \
+
 
 CC =		c++
 CPPFLAGS =	-Ofast
@@ -66,7 +80,7 @@ $(OBJDIR)/%.o: %.cpp
 				@${CC} ${CPPFLAGS} -o $@ ${INCS} -c $< 
 
 ${NAME}:	${OBJS} ${DEP} 
-				@sh is_file_to_upload.sh
+				@sh .is_file_to_upload.sh
 				@printf "%-15s ${_PURPLE}${_BOLD}${NAME}${_END}...\n" "Compiling"
 				@${CC} ${CPPFLAGS} -o ${NAME} ${INCS} ${OBJS}
 				@printf "\n${_GREEN}${_BOLD}Compilation done !${_END}\n"

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
+/*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/23 18:01:30 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/26 17:25:16 by gmary            ###   ########.fr       */
+/*   Updated: 2022/09/27 14:47:32 by mamaurai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,9 @@ void INLINE_NAMESPACE::Response::manage_response_post(void) {
 	{
         if (location_ptr->get_upload_path().empty())
 		    set_error_value(502);
-        else
+        else {
             set_error_value(403);
+        }
 		return ;
 	}
     if (_request->define_upload()) {
@@ -97,11 +98,6 @@ void
 INLINE_NAMESPACE::Response::manage_error_page(void) {
     std::string ret;
 
-	// if (_error_value == 400)
-	// {
-	// 	_body.append(create_html_error_page(_error_value));
-	// 	return ;
-	// }
     if (_location
         && _error_value == 403
         && _location->get_autoindex()

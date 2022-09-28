@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   _utils.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
+/*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:33:58 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/22 15:53:36 by gmary            ###   ########.fr       */
+/*   Updated: 2022/09/28 15:44:09 by mamaurai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,19 +45,20 @@ class Server;
 # define CNERR(x)						std::cerr << x << std::endl;
 # define CCOUT(color, x)				std::cout << color << x << CRESET << std::endl;
 # define CONFIG_STRING_MAX_SIZE			100
-// TODO before release the project change the number of max_client to 999 and make some tests
-# define MAX_CLIENT						512 // BUG which number should we put here, dont put to much if u dont want to fail select()
-# define BUFFER_SIZE					1025 // BUG undifined value
+# define MAX_CLIENT						512
+# define BUFFER_SIZE					1025
 # define MAX_SERVER						20
 # define WWW_PATH                       "./www/"
 
 # define EXCEPTION(x, y)				public: class x : public std::exception {const char * what (void) const throw() {return (y);}};
 
-# define DEBUG_1(x)						if (g_debug_prog_level >= 1) { x } // Simple input and output of request and response
-# define DEBUG_2(x)						if (g_debug_prog_level >= 2) { x } // Print full request and full response
-# define DEBUG_3(x)						if (g_debug_prog_level >= 3) { x } // Print update of the server
-# define DEBUG_4(x)						if (g_debug_prog_level >= 4) { x } // Print server config + CGI output
-# define DEBUG_5(x)						if (g_debug_prog_level >= 5) { x } // Print errors
+# define DEBUG_ON 		 				true
+
+#	define DEBUG_1(x)						if (g_debug_prog_level >= 1) { x } // Simple input and output of request and response
+#	define DEBUG_2(x)						if (g_debug_prog_level >= 2) { x } // Print full request and full response
+#	define DEBUG_3(x)						if (g_debug_prog_level >= 3) { x } // Print update of the server
+#	define DEBUG_4(x)						if (g_debug_prog_level >= 4) { x } // Print server config + CGI output
+#	define DEBUG_5(x)						if (g_debug_prog_level >= 5) { x } // Print errors
 
 # define LEXER							g_config.getLexer()
 # define SERVERS						g_config.getServers()

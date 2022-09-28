@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   _utils.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
+/*   By: mamaurai <mamaurai@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/07 15:33:04 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/26 16:34:44 by gmary            ###   ########.fr       */
+/*   Updated: 2022/09/27 14:42:50 by mamaurai         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,16 +77,18 @@ std::string    read_file(std::string path)
         }
         file.close();
     }
-    // else
-    //     content = "Problem reading file";
     return content;
 }
 
 bool
 path_is_dir (const std::string & str) {
 	struct stat buffer;
-
-  	return (stat (str.c_str(), &buffer) == 0 && buffer.st_mode & S_IFDIR);
+    std::string s(str);
+    
+    if (s.empty()) {
+        s = "./";
+    }
+  	return (stat (s.c_str(), &buffer) == 0 && buffer.st_mode & S_IFDIR);
 }
 
 bool

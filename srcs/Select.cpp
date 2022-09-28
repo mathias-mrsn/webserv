@@ -6,7 +6,7 @@
 /*   By: gmary <gmary@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/18 11:30:22 by mamaurai          #+#    #+#             */
-/*   Updated: 2022/09/26 17:47:46 by gmary            ###   ########.fr       */
+/*   Updated: 2022/09/26 18:10:34 by gmary            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,7 +282,6 @@ INLINE_NAMESPACE::Select::new_request(void) {
             int addrlen = it->get_addrlen();
             if ((_new_socket = accept(it->get_master_socket(), (struct sockaddr *) &(it->get_address()),
                                       (socklen_t *) &addrlen)) == SYSCALL_ERR) {
-				CNOUT(errno)
                 throw Select::fAcceptError();
             }
             if (fcntl(_new_socket, F_SETFL, O_NONBLOCK )) {
